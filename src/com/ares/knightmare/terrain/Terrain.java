@@ -1,7 +1,7 @@
 package com.ares.knightmare.terrain;
 
-import com.ares.knightmare.graphics.Loader;
 import com.ares.knightmare.models.RawModel;
+import com.ares.knightmare.rendering.Loader;
 import com.ares.knightmare.textures.TerrainTexture;
 import com.ares.knightmare.textures.TerrainTexturePack;
 

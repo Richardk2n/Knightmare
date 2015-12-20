@@ -39,6 +39,11 @@ public class Camera {
 		if (ego) {
 			this.xz += xz;
 			this.yz -= yz;
+			if(this.yz >90){
+				this.yz = 90; 
+			}else if(this.yz<-90){
+				this.yz=-90;
+			}
 			roll += xy;
 		} else {
 			move(xz, xy, yz);

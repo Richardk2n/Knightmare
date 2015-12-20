@@ -1,4 +1,4 @@
-package com.ares.knightmare.graphics;
+package com.ares.knightmare.rendering;
 
 public class ModelData {
 

@@ -30,75 +30,35 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.ares.knightmare.entities.Camera;
-import com.ares.knightmare.entities.Entity;
 import com.ares.knightmare.entities.Light;
-import com.ares.knightmare.graphics.Loader;
-import com.ares.knightmare.graphics.MasterRenderer;
-import com.ares.knightmare.graphics.OBJLoader;
 import com.ares.knightmare.listener.KeyListener;
 import com.ares.knightmare.listener.CursorPosListener;
-import com.ares.knightmare.models.RawModel;
-import com.ares.knightmare.models.TexturedModel;
-import com.ares.knightmare.terrain.Terrain;
-import com.ares.knightmare.textures.ModelTexture;
-import com.ares.knightmare.textures.TerrainTexture;
-import com.ares.knightmare.textures.TerrainTexturePack;
+import com.ares.knightmare.rendering.Loader;
+import com.ares.knightmare.rendering.MasterRenderer;
+import com.ares.knightmare.util.Level;
 
 public class LWJGLContext {
 
 	private GLFWErrorCallback errorCallback;
 	private KeyListener keyCallback;
 	private CursorPosListener cursorPosCallback;
-	private Loader loader = new Loader();
-	private static LWJGLContext context;
 	private long window;
-	private static int width, height;
+	private int width, height;
 	private Camera camera;
-	private Entity entity, gras;
 	private Light light;
-	private Terrain terrain;
 	private MasterRenderer renderer;
+	private Loader loader = new Loader();
 
-	public static void createContext(int width, int height) {
-		if (context == null) {
-			LWJGLContext.width = width;
-			LWJGLContext.height = height;
-			context = new LWJGLContext();
-		}
-	}
-
-	private LWJGLContext() {
+	public LWJGLContext(int width, int height) {
+		this.width = width;
+		this.height = height;
 		try {
 			init();
-
-			RawModel model = OBJLoader.loadObjModel("stall", loader);
-			TexturedModel texturedModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("stallTexture")));
-			ModelTexture texture = texturedModel.getTexture();
-			texture.setShineDamper(1);
-			texture.setReflectivity(0);
-			entity = new Entity(texturedModel, new Vector3f(0, 0, -25), 0, 160, 0, 1);
-
-			RawModel modelg = OBJLoader.loadObjModel("fern", loader);
-			TexturedModel texturedModelg = new TexturedModel(modelg, new ModelTexture(loader.loadTexture("fern")));
-			ModelTexture textureg = texturedModelg.getTexture();
-			textureg.setShineDamper(0);
-			textureg.setReflectivity(0);
-			textureg.setHasTransparency(true);
-			gras = new Entity(texturedModelg, new Vector3f(0, 0, -50), 0, 160, 0, 1);
 			
 			light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));//TODO
-			
-			
-			//TODO
-			TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("gras"));
-			TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("white"));
-			TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("Mauer"));
-			TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("sand"));
-			
-			TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, bTexture, gTexture);
-			TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
-			terrain = new Terrain(0, -1, loader, texturePack, blendMap);
 
+			new Level(renderer, loader);
+			
 			loop();
 
 			// Release window and window callbacks
@@ -165,7 +125,7 @@ public class LWJGLContext {
 		// the window or has pressed the ESCAPE key.
 		while (glfwWindowShouldClose(window) == GLFW_FALSE) {
 			renderer.prepare();
-			render();
+			renderer.render(light, camera);
 
 			glfwSwapBuffers(window); // swap the color buffers
 
@@ -173,15 +133,5 @@ public class LWJGLContext {
 			// invoked during this call.
 			glfwPollEvents();
 		}
-	}
-
-	private void render() {
-		// entity.increasePosition(0, 0, -0.01f); TODO
-		// entity.rotate(0, 2, 0);
-		renderer.processEntity(entity);
-		renderer.processEntity(gras);
-		renderer.processTerrain(terrain);
-		
-		renderer.render(light, camera);
 	}
 }

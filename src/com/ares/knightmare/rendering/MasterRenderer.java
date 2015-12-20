@@ -1,4 +1,4 @@
-package com.ares.knightmare.graphics;
+package com.ares.knightmare.rendering;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
@@ -74,15 +74,17 @@ public class MasterRenderer {
 		terrainShader.loadViewMatrix(camera);
 		terrainRenderer.render(terrains);
 		terrainShader.stop();
-		entities.clear(); // TODO change up why per frame??
-		terrains.clear();
 	}
-
-	public void processTerrain(Terrain terrain) {
+	
+	public void addTerrain(Terrain terrain) {
 		terrains.add(terrain);
 	}
-
-	public void processEntity(Entity entity) {
+	
+	public void removeTerrain(Terrain terrain) {
+		terrains.remove(terrain);
+	}
+	
+	public void addEntity(Entity entity) {
 		TexturedModel entityModel = entity.getModel();
 		List<Entity> batch = entities.get(entityModel);
 		if (batch == null) {
@@ -92,6 +94,11 @@ public class MasterRenderer {
 		} else {
 			batch.add(entity);
 		}
+	}
+	
+	public void removeEntity(Entity entity) {
+		TexturedModel entityModel = entity.getModel();
+		entities.get(entityModel).remove(entity);
 	}
 
 	public void cleanUp() {
