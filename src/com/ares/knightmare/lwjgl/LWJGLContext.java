@@ -34,16 +34,16 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.ares.knightmare.Loader;
-import com.ares.knightmare.Renderer;
 import com.ares.knightmare.entities.Camera;
 import com.ares.knightmare.entities.Entity;
+import com.ares.knightmare.entities.Light;
+import com.ares.knightmare.graphics.Loader;
+import com.ares.knightmare.graphics.MasterRenderer;
+import com.ares.knightmare.graphics.OBJLoader;
 import com.ares.knightmare.listener.KeyListener;
 import com.ares.knightmare.listener.CursorPosListener;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.models.TexturedModel;
-import com.ares.knightmare.shaders.Shaders;
-import com.ares.knightmare.shaders.StaticShader;
 import com.ares.knightmare.textures.ModelTexture;
 
 public class LWJGLContext {
@@ -52,21 +52,14 @@ public class LWJGLContext {
 	private KeyListener keyCallback;
 	private CursorPosListener cursorPosCallback;
 	private Loader loader = new Loader();
-
 	private static LWJGLContext context;
-
 	private long window;
-
 	private static int width, height;
-	
-	private Renderer renderer;
-
 	private Camera camera;
-	
-	
 	private Entity entity;
-	
-	
+	private Light light;
+	private MasterRenderer renderer;
+
 	public static void createContext(int width, int height) {
 		if (context == null) {
 			LWJGLContext.width = width;
@@ -78,91 +71,15 @@ public class LWJGLContext {
 	private LWJGLContext() {
 		try {
 			init();
-			
-			float[] vertices = {			
-					-0.5f,0.5f,-0.5f,	
-					-0.5f,-0.5f,-0.5f,	
-					0.5f,-0.5f,-0.5f,	
-					0.5f,0.5f,-0.5f,		
-					
-					-0.5f,0.5f,0.5f,	
-					-0.5f,-0.5f,0.5f,	
-					0.5f,-0.5f,0.5f,	
-					0.5f,0.5f,0.5f,
-					
-					0.5f,0.5f,-0.5f,	
-					0.5f,-0.5f,-0.5f,	
-					0.5f,-0.5f,0.5f,	
-					0.5f,0.5f,0.5f,
-					
-					-0.5f,0.5f,-0.5f,	
-					-0.5f,-0.5f,-0.5f,	
-					-0.5f,-0.5f,0.5f,	
-					-0.5f,0.5f,0.5f,
-					
-					-0.5f,0.5f,0.5f,
-					-0.5f,0.5f,-0.5f,
-					0.5f,0.5f,-0.5f,
-					0.5f,0.5f,0.5f,
-					
-					-0.5f,-0.5f,0.5f,
-					-0.5f,-0.5f,-0.5f,
-					0.5f,-0.5f,-0.5f,
-					0.5f,-0.5f,0.5f
-					
-			};
-			
-			float[] textureCoords = {
-					
-					0,0,
-					0,1,
-					1,1,
-					1,0,			
-					0,0,
-					0,1,
-					1,1,
-					1,0,			
-					0,0,
-					0,1,
-					1,1,
-					1,0,
-					0,0,
-					0,1,
-					1,1,
-					1,0,
-					0,0,
-					0,1,
-					1,1,
-					1,0,
-					0,0,
-					0,1,
-					1,1,
-					1,0
 
-					
-			};
-			
-			int[] indices = {
-					0,1,3,	
-					3,1,2,	
-					4,5,7,
-					7,5,6,
-					8,9,11,
-					11,9,10,
-					12,13,15,
-					15,13,14,	
-					16,17,19,
-					19,17,18,
-					20,21,23,
-					23,21,22
+			RawModel model = OBJLoader.loadObjModel("stall", loader);
+			TexturedModel texturedModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("stallTexture")));
+			ModelTexture texture = texturedModel.getTexture();
+			texture.setShineDamper(0);
+			texture.setReflectivity(0);
+			entity = new Entity(texturedModel, new Vector3f(0, 0, -25), 0, 160, 0, 1);
+			light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));
 
-			};
-
-			RawModel model = loader.loadToVAO(vertices, textureCoords, indices);
-			TexturedModel texturedModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("baum")));
-			
-			entity = new Entity(texturedModel, new Vector3f(0, 0, -1), 0, 0, 0, 1);
-			
 			loop();
 
 			// Release window and window callbacks
@@ -171,7 +88,7 @@ public class LWJGLContext {
 			cursorPosCallback.release();
 		} finally {
 			// Terminate GLFW and release the GLFWErrorCallback
-			Shaders.cleanUp();
+			renderer.cleanUp();
 			loader.cleanUp();
 			glfwTerminate();
 			errorCallback.release();
@@ -197,9 +114,10 @@ public class LWJGLContext {
 
 		// Create the window
 		window = glfwCreateWindow(width, height, "Knightmare", NULL, NULL);
-		if (window == NULL){
-			throw new RuntimeException("Failed to create the GLFW window");}
-		
+		if (window == NULL) {
+			throw new RuntimeException("Failed to create the GLFW window");
+		}
+
 		camera = new Camera(width, height);
 
 		// Setup a key callback. It will be called every time a key is pressed,
@@ -219,23 +137,20 @@ public class LWJGLContext {
 
 		glfwShowWindow(window);
 		GL.createCapabilities();
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		
-		Shaders.create();
-		renderer = new Renderer((StaticShader) Shaders.staticShader, width, height);
+		glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+
+		renderer = new MasterRenderer(width, height);
 	}
 
 	private void loop() {
 		// Run the rendering loop until the user has attempted to close
 		// the window or has pressed the ESCAPE key.
 		while (glfwWindowShouldClose(window) == GLFW_FALSE) {
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-			GL11.glEnable(GL11.GL_DEPTH_TEST);	
-			
-			Shaders.staticShader.start();
-			((StaticShader) Shaders.staticShader).loadViewMatrix(camera);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the
+																// framebuffer
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+
 			render();
-			Shaders.staticShader.stop();
 
 			glfwSwapBuffers(window); // swap the color buffers
 
@@ -246,9 +161,10 @@ public class LWJGLContext {
 	}
 
 	private void render() {
-//		entity.increasePosition(0, 0, -0.01f); TODO
-		entity.rotate(0, 2, 0);
-
-		renderer.render(entity, (StaticShader) Shaders.staticShader);
+		// entity.increasePosition(0, 0, -0.01f); TODO
+		// entity.rotate(0, 2, 0);
+		renderer.processEntity(entity);
+		
+		renderer.render(light, camera);
 	}
 }

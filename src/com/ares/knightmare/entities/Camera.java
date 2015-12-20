@@ -5,28 +5,43 @@ import org.lwjgl.util.vector.Vector3f;
 public class Camera {
 
 	private Vector3f position = new Vector3f(0, 0, 0);
-	private float pitch, yaw, roll;
+	private float yz, xz, roll;
 	private int width, height;
 	private boolean ego = true;
-	
+
 	public Camera(int width, int height) {
 		this.width = width;
 		this.height = height;
 	}
 
-	public void move(float x, float y, float z) {
-		position.x += x;
-		position.y += (ego?y:-z);
-		position.z += (ego?z:y);
+	public void move(float ad, float ss, float ws) {
+		if (ego) {
+			position.x += ad*Math.cos(Math.toRadians(xz))+ws*Math.sin(Math.toRadians(xz));
+			position.y += ss; //TODO up and down
+			position.z -= ws*Math.cos(Math.toRadians(xz))-ad*Math.sin(Math.toRadians(xz));
+		} else {
+			position.x += ad;//TODO both
+			position.y += ws;
+			position.z += ss;
+		}
 	}
-	
-	public void rotate(float x, float y, float z) {
-		if(ego){
-			yaw += x;
-			pitch += y;
+
+	public void set(float x, float y, float z, float yz, float xz, float roll) {
+		position.x = x;
+		position.y = y;
+		position.z = z;
+		this.yz = yz;
+		this.xz = xz;
+		this.roll = roll;
+	}
+
+	public void rotate(float xz, float yz, float z) {
+		if (ego) {
+			this.xz += xz;
+			this.yz -= yz;
 			roll += z;
-		}else{
-			move(x/100, z/100, y/100);
+		} else {
+			move(xz / 100, z / 100, yz / 100);
 		}
 	}
 
@@ -35,11 +50,11 @@ public class Camera {
 	}
 
 	public float getPitch() {
-		return pitch;
+		return yz;
 	}
 
 	public float getYaw() {
-		return yaw;
+		return xz;
 	}
 
 	public float getRoll() {
