@@ -21,17 +21,12 @@ import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.ares.knightmare.entities.Camera;
@@ -44,6 +39,7 @@ import com.ares.knightmare.listener.KeyListener;
 import com.ares.knightmare.listener.CursorPosListener;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.models.TexturedModel;
+import com.ares.knightmare.terrain.Terrain;
 import com.ares.knightmare.textures.ModelTexture;
 
 public class LWJGLContext {
@@ -56,8 +52,9 @@ public class LWJGLContext {
 	private long window;
 	private static int width, height;
 	private Camera camera;
-	private Entity entity;
+	private Entity entity, gras;
 	private Light light;
+	private Terrain terrain, terrain2;
 	private MasterRenderer renderer;
 
 	public static void createContext(int width, int height) {
@@ -78,7 +75,19 @@ public class LWJGLContext {
 			texture.setShineDamper(0);
 			texture.setReflectivity(0);
 			entity = new Entity(texturedModel, new Vector3f(0, 0, -25), 0, 160, 0, 1);
-			light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));
+
+			RawModel modelg = OBJLoader.loadObjModel("fern", loader);
+			TexturedModel texturedModelg = new TexturedModel(modelg, new ModelTexture(loader.loadTexture("fern")));
+			ModelTexture textureg = texturedModelg.getTexture();
+			textureg.setShineDamper(0);
+			textureg.setReflectivity(0);
+			textureg.setHasTransparency(true);
+			gras = new Entity(texturedModelg, new Vector3f(0, 0, -50), 0, 160, 0, 1);
+			
+			light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));//TODO
+			
+			terrain = new Terrain(0, -1, loader, new ModelTexture(loader.loadTexture("gras")));
+			terrain2 = new Terrain(1, -1, loader, new ModelTexture(loader.loadTexture("gras")));
 
 			loop();
 
@@ -137,7 +146,6 @@ public class LWJGLContext {
 
 		glfwShowWindow(window);
 		GL.createCapabilities();
-		glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
 		renderer = new MasterRenderer(width, height);
 	}
@@ -146,10 +154,7 @@ public class LWJGLContext {
 		// Run the rendering loop until the user has attempted to close
 		// the window or has pressed the ESCAPE key.
 		while (glfwWindowShouldClose(window) == GLFW_FALSE) {
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the
-																// framebuffer
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-
+			renderer.prepare();
 			render();
 
 			glfwSwapBuffers(window); // swap the color buffers
@@ -164,6 +169,9 @@ public class LWJGLContext {
 		// entity.increasePosition(0, 0, -0.01f); TODO
 		// entity.rotate(0, 2, 0);
 		renderer.processEntity(entity);
+		renderer.processEntity(gras);
+		renderer.processTerrain(terrain);
+		renderer.processTerrain(terrain2);
 		
 		renderer.render(light, camera);
 	}
