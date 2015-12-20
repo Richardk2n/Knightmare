@@ -41,6 +41,8 @@ import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.models.TexturedModel;
 import com.ares.knightmare.terrain.Terrain;
 import com.ares.knightmare.textures.ModelTexture;
+import com.ares.knightmare.textures.TerrainTexture;
+import com.ares.knightmare.textures.TerrainTexturePack;
 
 public class LWJGLContext {
 
@@ -54,7 +56,7 @@ public class LWJGLContext {
 	private Camera camera;
 	private Entity entity, gras;
 	private Light light;
-	private Terrain terrain, terrain2;
+	private Terrain terrain;
 	private MasterRenderer renderer;
 
 	public static void createContext(int width, int height) {
@@ -72,7 +74,7 @@ public class LWJGLContext {
 			RawModel model = OBJLoader.loadObjModel("stall", loader);
 			TexturedModel texturedModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("stallTexture")));
 			ModelTexture texture = texturedModel.getTexture();
-			texture.setShineDamper(0);
+			texture.setShineDamper(1);
 			texture.setReflectivity(0);
 			entity = new Entity(texturedModel, new Vector3f(0, 0, -25), 0, 160, 0, 1);
 
@@ -86,8 +88,16 @@ public class LWJGLContext {
 			
 			light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));//TODO
 			
-			terrain = new Terrain(0, -1, loader, new ModelTexture(loader.loadTexture("gras")));
-			terrain2 = new Terrain(1, -1, loader, new ModelTexture(loader.loadTexture("gras")));
+			
+			//TODO
+			TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("gras"));
+			TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("white"));
+			TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("Mauer"));
+			TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("sand"));
+			
+			TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, bTexture, gTexture);
+			TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
+			terrain = new Terrain(0, -1, loader, texturePack, blendMap);
 
 			loop();
 
@@ -171,7 +181,6 @@ public class LWJGLContext {
 		renderer.processEntity(entity);
 		renderer.processEntity(gras);
 		renderer.processTerrain(terrain);
-		renderer.processTerrain(terrain2);
 		
 		renderer.render(light, camera);
 	}

@@ -12,7 +12,7 @@ public class TerrainShader extends ShaderProgram {
 	private static final String VERTEX_FILE = "res/shaders/vertexShaderTerrain", FRAGMENT_FILE = "res/shaders/fragmentShaderTerrain";
 
 	private int location_transformationMatrix, location_viewMatrix, location_projectionMatrix, location_lightPosition, location_lightColor, location_shineDamper,
-			location_reflectivity, location_skyColor;
+			location_reflectivity, location_skyColor, location_backgroundTexture, location_rTexture, location_gTexture, location_bTexture, location_blendMap;
 
 	public TerrainShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -35,6 +35,11 @@ public class TerrainShader extends ShaderProgram {
 		location_shineDamper = super.getUniformLocation("shineDaper");
 		location_reflectivity = super.getUniformLocation("reflectivity");
 		location_skyColor = super.getUniformLocation("skyColor");
+		location_backgroundTexture = super.getUniformLocation("backgroundTexture");
+		location_rTexture = super.getUniformLocation("rTexture");
+		location_gTexture = super.getUniformLocation("gTexture");
+		location_bTexture = super.getUniformLocation("bTexture");
+		location_blendMap = super.getUniformLocation("blendMap");
 	}
 
 	public void loadTransformationMatrix(Matrix4f matrix) {
@@ -61,5 +66,13 @@ public class TerrainShader extends ShaderProgram {
 
 	public void loadSkyColor(float r, float g, float b) {
 		super.loadVector(location_skyColor, new Vector3f(r, g, b));
+	}
+	
+	public void connectTextureUnits(){
+		super.loadInt(location_backgroundTexture, 0);
+		super.loadInt(location_rTexture, 1);
+		super.loadInt(location_bTexture, 2);
+		super.loadInt(location_gTexture, 3);
+		super.loadInt(location_blendMap, 4);
 	}
 }

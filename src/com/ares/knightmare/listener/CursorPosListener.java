@@ -11,6 +11,8 @@ public class CursorPosListener extends GLFWCursorPosCallback {
 
 	private Camera camera;
 	private Timer timer;
+	
+	private static final int amount = 1, period = 20, border = 100;
 
 	public CursorPosListener(Camera camera) {
 		super();
@@ -22,41 +24,41 @@ public class CursorPosListener extends GLFWCursorPosCallback {
 	public void invoke(long window, double xpos, double ypos) {
 		timer.cancel();
 		timer = new Timer(true);
-		if (xpos < 100) {
+		if (xpos < border) {
 			timer.scheduleAtFixedRate(new TimerTask() {
 
 				@Override
 				public void run() {
-					camera.rotate(-2, 0, 0);
+					camera.rotate(-amount, 0, 0);
 				}
-			}, 1, 30);
+			}, 0, period);
 		}
-		if (ypos < 100) {
+		if (ypos < border) {
 			timer.scheduleAtFixedRate(new TimerTask() {
 
 				@Override
 				public void run() {
-					camera.rotate(0, 2, 0);
+					camera.rotate(0, amount, 0);
 				}
-			}, 1, 30);
+			}, 0, period);
 		}
-		if (xpos > camera.getWidth() - 100) {
+		if (xpos > camera.getWidth() - border) {
 			timer.scheduleAtFixedRate(new TimerTask() {
 
 				@Override
 				public void run() {
-					camera.rotate(2, 0, 0);
+					camera.rotate(amount, 0, 0);
 				}
-			}, 1, 30);
+			}, 0, period);
 		}
-		if (ypos > camera.getHeight() - 100) {
+		if (ypos > camera.getHeight() - border) {
 			timer.scheduleAtFixedRate(new TimerTask() {
 
 				@Override
 				public void run() {
-					camera.rotate(0, -2, 0);
+					camera.rotate(0, -amount, 0);
 				}
-			}, 1, 30);
+			}, 0, period);
 		}
 	}
 }

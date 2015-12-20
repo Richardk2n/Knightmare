@@ -16,13 +16,13 @@ public class Camera {
 
 	public void move(float ad, float ss, float ws) {
 		if (ego) {
-			position.x += ad*Math.cos(Math.toRadians(xz))+ws*Math.sin(Math.toRadians(xz));
-			position.y += ss; //TODO up and down
-			position.z -= ws*Math.cos(Math.toRadians(xz))-ad*Math.sin(Math.toRadians(xz));
+			position.x += ad * Math.cos(Math.toRadians(xz)) + ws * Math.sin(Math.toRadians(xz));
+			position.y += ss; // TODO up and down
+			position.z -= ws * Math.cos(Math.toRadians(xz)) - ad * Math.sin(Math.toRadians(xz));
 		} else {
-			position.x += ad;//TODO both
-			position.y += ws;
-			position.z += ss;
+			position.x += ad;// TODO both
+			position.y += ss;
+			position.z -= ws;
 		}
 	}
 
@@ -35,13 +35,13 @@ public class Camera {
 		this.roll = roll;
 	}
 
-	public void rotate(float xz, float yz, float z) {
+	public void rotate(float xz, float yz, float xy) {
 		if (ego) {
 			this.xz += xz;
 			this.yz -= yz;
-			roll += z;
+			roll += xy;
 		} else {
-			move(xz / 100, z / 100, yz / 100);
+			move(xz, xy, yz);
 		}
 	}
 
