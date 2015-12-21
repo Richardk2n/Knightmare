@@ -5,18 +5,18 @@ import java.util.TimerTask;
 
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 
-import com.ares.knightmare.entities.Camera;
+import com.ares.knightmare.entities.CameraHandler;
 
 public class CursorPosListener extends GLFWCursorPosCallback {
 
-	private Camera camera;
+	private CameraHandler cameraHandler;
 	private Timer timer;
 	
 	private static final int amount = 1, period = 20, border = 100;
 
-	public CursorPosListener(Camera camera) {
+	public CursorPosListener(CameraHandler cameraHandler) {
 		super();
-		this.camera = camera;
+		this.cameraHandler = cameraHandler;
 		timer = new Timer(true);
 	}
 
@@ -29,7 +29,7 @@ public class CursorPosListener extends GLFWCursorPosCallback {
 
 				@Override
 				public void run() {
-					camera.rotate(-amount, 0, 0);
+					cameraHandler.rotate(-amount, 0, 0);
 				}
 			}, 0, period);
 		}
@@ -38,25 +38,25 @@ public class CursorPosListener extends GLFWCursorPosCallback {
 
 				@Override
 				public void run() {
-					camera.rotate(0, amount, 0);
+					cameraHandler.rotate(0, amount, 0);
 				}
 			}, 0, period);
 		}
-		if (xpos > camera.getWidth() - border) {
+		if (xpos > cameraHandler.getWidth() - border) {
 			timer.scheduleAtFixedRate(new TimerTask() {
 
 				@Override
 				public void run() {
-					camera.rotate(amount, 0, 0);
+					cameraHandler.rotate(amount, 0, 0);
 				}
 			}, 0, period);
 		}
-		if (ypos > camera.getHeight() - border) {
+		if (ypos > cameraHandler.getHeight() - border) {
 			timer.scheduleAtFixedRate(new TimerTask() {
 
 				@Override
 				public void run() {
-					camera.rotate(0, -amount, 0);
+					cameraHandler.rotate(0, -amount, 0);
 				}
 			}, 0, period);
 		}

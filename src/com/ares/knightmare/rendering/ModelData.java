@@ -6,7 +6,7 @@ public class ModelData {
 	private float[] textureCoords;
 	private float[] normals;
 	private int[] indices;
-	private float furthestPoint;
+	private float furthestPoint, height;
 
 	public ModelData(float[] vertices, float[] textureCoords, float[] normals, int[] indices,
 			float furthestPoint) {
@@ -35,6 +35,14 @@ public class ModelData {
 
 	public float getFurthestPoint() {
 		return furthestPoint;
+	}
+
+	public float getHeight() {
+		return height;
+	}
+
+	public void setHeight(float height) {
+		this.height = height;
 	}
 
 }

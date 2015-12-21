@@ -7,18 +7,21 @@ import java.util.TimerTask;
 
 import org.lwjgl.glfw.GLFWKeyCallback;
 
-import com.ares.knightmare.entities.Camera;
+import com.ares.knightmare.entities.CameraHandler;
+import com.ares.knightmare.util.Level;
 
 public class KeyListener extends GLFWKeyCallback {
 
-	private Camera camera;
+	private CameraHandler cameraHandler;
+	private Level level;
 	private Timer timerW, timerS, timerA, timerD, timerSp, timerSh;
 	private static final float speed = 0.1f;
 	private static final int period = 5;
 
-	public KeyListener(Camera camera) {
+	public KeyListener(CameraHandler cameraHandler, Level level) {
 		super();
-		this.camera = camera;
+		this.cameraHandler = cameraHandler;
+		this.level = level;
 	}
 
 	@Override
@@ -27,7 +30,11 @@ public class KeyListener extends GLFWKeyCallback {
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 		}
 		if (key == GLFW_KEY_E && action == GLFW_RELEASE) {
-			camera.setEgo(!camera.isEgo());
+			if(cameraHandler.isBound()){
+				cameraHandler.bindEntity(null);
+			}else{
+				cameraHandler.bindEntity(level.geEntity());//TODO
+			}
 		}
 
 		if (key == GLFW_KEY_W) {
@@ -37,7 +44,7 @@ public class KeyListener extends GLFWKeyCallback {
 
 					@Override
 					public void run() {
-						camera.move(0, 0, speed);
+						cameraHandler.move(0, 0, speed);
 					}
 				}, 0, period);
 			} else if (action == GLFW_RELEASE) {
@@ -51,7 +58,7 @@ public class KeyListener extends GLFWKeyCallback {
 
 					@Override
 					public void run() {
-						camera.move(0, 0, -speed);
+						cameraHandler.move(0, 0, -speed);
 					}
 				}, 0, period);
 			} else if (action == GLFW_RELEASE) {
@@ -66,7 +73,7 @@ public class KeyListener extends GLFWKeyCallback {
 
 					@Override
 					public void run() {
-						camera.move(-speed, 0, 0);
+						cameraHandler.move(-speed, 0, 0);
 					}
 				}, 0, period);
 			} else if (action == GLFW_RELEASE) {
@@ -80,7 +87,7 @@ public class KeyListener extends GLFWKeyCallback {
 
 					@Override
 					public void run() {
-						camera.move(speed, 0, 0);
+						cameraHandler.move(speed, 0, 0);
 					}
 				}, 0, period);
 			} else if (action == GLFW_RELEASE) {
@@ -95,7 +102,7 @@ public class KeyListener extends GLFWKeyCallback {
 
 					@Override
 					public void run() {
-						camera.move(0, speed, 0);
+						cameraHandler.move(0, speed, 0);
 					}
 				}, 0, period);
 			} else if (action == GLFW_RELEASE) {
@@ -109,7 +116,7 @@ public class KeyListener extends GLFWKeyCallback {
 
 					@Override
 					public void run() {
-						camera.move(0, -speed, 0);
+						cameraHandler.move(0, -speed, 0);
 					}
 				}, 0, period);
 			} else if (action == GLFW_RELEASE) {

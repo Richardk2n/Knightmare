@@ -22,16 +22,21 @@ import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.opengl.GL11.*;
 
+import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.ares.knightmare.entities.Camera;
+import com.ares.knightmare.entities.CameraHandler;
 import com.ares.knightmare.entities.Light;
+import com.ares.knightmare.entities.Overseher;
 import com.ares.knightmare.listener.KeyListener;
+import com.ares.knightmare.listener.MouseButtonListener;
+import com.ares.knightmare.listener.ScrollListener;
 import com.ares.knightmare.listener.CursorPosListener;
 import com.ares.knightmare.rendering.Loader;
 import com.ares.knightmare.rendering.MasterRenderer;
@@ -42,9 +47,12 @@ public class LWJGLContext {
 	private GLFWErrorCallback errorCallback;
 	private KeyListener keyCallback;
 	private CursorPosListener cursorPosCallback;
+	private ScrollListener scrollCallback;
+	private MouseButtonListener mouseButtonCallback;
 	private long window;
 	private int width, height;
-	private Camera camera;
+	private CameraHandler cameraHandler;
+	private Overseher overseher;
 	private Light light;
 	private MasterRenderer renderer;
 	private Loader loader = new Loader();
@@ -54,17 +62,17 @@ public class LWJGLContext {
 		this.height = height;
 		try {
 			init();
-			
-			light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));//TODO
 
-			new Level(renderer, loader);
-			
+			light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));// TODO
+
 			loop();
 
 			// Release window and window callbacks
 			glfwDestroyWindow(window);
 			keyCallback.release();
 			cursorPosCallback.release();
+			scrollCallback.release();
+			mouseButtonCallback.release();
 		} finally {
 			// Terminate GLFW and release the GLFWErrorCallback
 			renderer.cleanUp();
@@ -97,12 +105,9 @@ public class LWJGLContext {
 			throw new RuntimeException("Failed to create the GLFW window");
 		}
 
-		camera = new Camera(width, height);
-
-		// Setup a key callback. It will be called every time a key is pressed,
-		// repeated or released.
-		glfwSetKeyCallback(window, keyCallback = new KeyListener(camera));
-		GLFW.glfwSetCursorPosCallback(window, cursorPosCallback = new CursorPosListener(camera));
+		overseher = new Overseher(width, height);
+		overseher.move(0, 20, 0);
+		cameraHandler = new CameraHandler(overseher);
 
 		// Get the resolution of the primary monitor
 		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -117,7 +122,21 @@ public class LWJGLContext {
 		glfwShowWindow(window);
 		GL.createCapabilities();
 
+		System.out.println("OS name " + System.getProperty("os.name"));
+		System.out.println("OS version " + System.getProperty("os.version"));
+		System.out.println("LWJGL version " + Version.getVersion());
+		System.out.println("OpenGL version " + glGetString(GL_VERSION));
+
 		renderer = new MasterRenderer(width, height);
+
+		Level level = new Level(renderer, loader);
+
+		// Setup a key callback. It will be called every time a key is pressed,
+		// repeated or released.
+		glfwSetKeyCallback(window, keyCallback = new KeyListener(cameraHandler, level));
+		GLFW.glfwSetCursorPosCallback(window, cursorPosCallback = new CursorPosListener(cameraHandler));
+		GLFW.glfwSetScrollCallback(window, scrollCallback = new ScrollListener(cameraHandler));
+		GLFW.glfwSetMouseButtonCallback(window, mouseButtonCallback = new MouseButtonListener(cameraHandler));
 	}
 
 	private void loop() {
@@ -125,7 +144,7 @@ public class LWJGLContext {
 		// the window or has pressed the ESCAPE key.
 		while (glfwWindowShouldClose(window) == GLFW_FALSE) {
 			renderer.prepare();
-			renderer.render(light, camera);
+			renderer.render(light, cameraHandler.getCamera());
 
 			glfwSwapBuffers(window); // swap the color buffers
 

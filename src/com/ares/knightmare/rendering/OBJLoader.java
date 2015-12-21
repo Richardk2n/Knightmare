@@ -19,7 +19,9 @@ public class OBJLoader {
 
 	public static RawModel loadObjModel(String fileName, Loader loader){
 		ModelData data = loadOBJ(fileName);
-		return loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());
+		RawModel model = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());
+		model.setHeight(data.getHeight());
+		return model;
 	}
 	
 	private static ModelData loadOBJ(String objFileName) {
@@ -36,6 +38,7 @@ public class OBJLoader {
 		List<Vector2f> textures = new ArrayList<Vector2f>();
 		List<Vector3f> normals = new ArrayList<Vector3f>();
 		List<Integer> indices = new ArrayList<Integer>();
+		float y = 0;
 		try {
 			while (true) {
 				line = reader.readLine();
@@ -44,6 +47,7 @@ public class OBJLoader {
 					Vector3f vertex = new Vector3f((float) Float.valueOf(currentLine[1]),
 							(float) Float.valueOf(currentLine[2]),
 							(float) Float.valueOf(currentLine[3]));
+					y = Math.max(y, Float.valueOf(currentLine[2]));
 					Vertex newVertex = new Vertex(vertices.size(), vertex);
 					vertices.add(newVertex);
 
@@ -85,6 +89,7 @@ public class OBJLoader {
 		int[] indicesArray = convertIndicesListToArray(indices);
 		ModelData data = new ModelData(verticesArray, texturesArray, normalsArray, indicesArray,
 				furthest);
+		data.setHeight(y);
 		return data;
 	}
 

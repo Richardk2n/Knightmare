@@ -15,13 +15,15 @@ import com.ares.knightmare.textures.TerrainTexturePack;
 
 public class Level {
 	
+	private Entity q;
+	
 	public Level(MasterRenderer renderer, Loader loader){
 		RawModel model = OBJLoader.loadObjModel("stall", loader);
 		TexturedModel texturedModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("stallTexture")));
 		ModelTexture texture = texturedModel.getTexture();
 		texture.setShineDamper(1);
 		texture.setReflectivity(0);
-		Entity entity = new Entity(texturedModel, new Vector3f(0, 0, -25), 0, 160, 0, 1);
+		Entity entity = new Entity(texturedModel, new Vector3f(0, 0, -25), 0, 0, 0, 1);
 
 		RawModel modelg = OBJLoader.loadObjModel("fern", loader);
 		TexturedModel texturedModelg = new TexturedModel(modelg, new ModelTexture(loader.loadTexture("fern")));
@@ -29,7 +31,15 @@ public class Level {
 		textureg.setShineDamper(0);
 		textureg.setReflectivity(0);
 		textureg.setHasTransparency(true);
-		Entity gras = new Entity(texturedModelg, new Vector3f(0, 0, -50), 0, 160, 0, 1);
+		Entity gras = new Entity(texturedModelg, new Vector3f(0, 0, -50), 0, 0, 0, 1);
+		
+		RawModel modelq = OBJLoader.loadObjModel("tree", loader);
+		TexturedModel texturedModelq = new TexturedModel(modelq, new ModelTexture(loader.loadTexture("tree")));
+		ModelTexture textureq = texturedModelg.getTexture();
+		textureq.setShineDamper(0);
+		textureq.setReflectivity(0);
+		textureq.setHasTransparency(true);
+		q = new Entity(texturedModelq, new Vector3f(0, 0, 0), 0, 0, 0, 1);
 		
 		//TODO
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("gras"));
@@ -43,6 +53,11 @@ public class Level {
 		
 		renderer.addEntity(entity);
 		renderer.addEntity(gras);
+		renderer.addEntity(q);
 		renderer.addTerrain(terrain);
+	}
+	
+	public Entity geEntity(){
+		return q;
 	}
 }
