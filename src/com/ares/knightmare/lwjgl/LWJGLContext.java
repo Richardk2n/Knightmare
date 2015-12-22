@@ -29,10 +29,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.util.vector.Vector3f;
-
 import com.ares.knightmare.entities.CameraHandler;
-import com.ares.knightmare.entities.Light;
 import com.ares.knightmare.entities.Overseher;
 import com.ares.knightmare.listener.KeyListener;
 import com.ares.knightmare.listener.MouseButtonListener;
@@ -53,7 +50,6 @@ public class LWJGLContext {
 	private int width, height;
 	private CameraHandler cameraHandler;
 	private Overseher overseher;
-	private Light light;
 	private MasterRenderer renderer;
 	private Loader loader = new Loader();
 
@@ -62,9 +58,7 @@ public class LWJGLContext {
 		this.height = height;
 		try {
 			init();
-
-			light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));// TODO
-
+			
 			loop();
 
 			// Release window and window callbacks
@@ -127,7 +121,7 @@ public class LWJGLContext {
 		System.out.println("LWJGL version " + Version.getVersion());
 		System.out.println("OpenGL version " + glGetString(GL_VERSION));
 
-		renderer = new MasterRenderer(width, height);
+		renderer = new MasterRenderer(width, height, loader);
 
 		Level level = new Level(renderer, loader);
 
@@ -144,7 +138,7 @@ public class LWJGLContext {
 		// the window or has pressed the ESCAPE key.
 		while (glfwWindowShouldClose(window) == GLFW_FALSE) {
 			renderer.prepare();
-			renderer.render(light, cameraHandler.getCamera());
+			renderer.render(cameraHandler.getCamera());
 
 			glfwSwapBuffers(window); // swap the color buffers
 

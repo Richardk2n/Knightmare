@@ -10,10 +10,10 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
 import com.ares.knightmare.entities.Entity;
+import com.ares.knightmare.models.ModelTexture;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.models.TexturedModel;
 import com.ares.knightmare.shaders.StaticShader;
-import com.ares.knightmare.textures.ModelTexture;
 import com.ares.knightmare.util.Maths;
 
 public class EntityRenderer {
@@ -51,6 +51,7 @@ public class EntityRenderer {
 		}
 		shader.loadFakeLightingVariable(texture.isUseFakeLighting());
 		shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
+		shader.loadNumberOfRows(texture.getNumberOfRows());
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getId());
 	}
@@ -66,6 +67,7 @@ public class EntityRenderer {
 	private void prepareInstance(Entity entity) {
 		Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(), -entity.getYz(), -entity.getXz(), -entity.getRoll(), entity.getScale());
 		shader.loadTransformationMatrix(transformationMatrix);
+		shader.loadOffset(entity.getTextureXOffset(), entity.getTextureYOffset());
 	}
 
 }

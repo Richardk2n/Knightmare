@@ -1,7 +1,5 @@
 package com.ares.knightmare.models;
 
-import com.ares.knightmare.textures.ModelTexture;
-
 public class TexturedModel {
 
 	private RawModel rawModel;

@@ -12,7 +12,7 @@ import org.lwjgl.util.vector.Vector3f;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.shaders.TerrainShader;
 import com.ares.knightmare.terrain.Terrain;
-import com.ares.knightmare.textures.TerrainTexturePack;
+import com.ares.knightmare.terrain.TerrainTexturePack;
 import com.ares.knightmare.util.Maths;
 
 public class TerrainRenderer {

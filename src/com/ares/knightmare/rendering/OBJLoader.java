@@ -12,6 +12,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.ares.knightmare.models.RawModel;
+import com.ares.knightmare.util.Vertex;
 
 public class OBJLoader {
 	
