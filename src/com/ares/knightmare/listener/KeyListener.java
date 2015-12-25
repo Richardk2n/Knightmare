@@ -7,7 +7,7 @@ import java.util.TimerTask;
 
 import org.lwjgl.glfw.GLFWKeyCallback;
 
-import com.ares.knightmare.entities.CameraHandler;
+import com.ares.knightmare.handler.CameraHandler;
 import com.ares.knightmare.util.Level;
 
 public class KeyListener extends GLFWKeyCallback {

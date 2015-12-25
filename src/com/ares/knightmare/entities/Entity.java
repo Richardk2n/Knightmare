@@ -2,38 +2,42 @@ package com.ares.knightmare.entities;
 
 import org.lwjgl.util.vector.Vector3f;
 
+import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.models.TexturedModel;
 import com.ares.knightmare.terrain.Terrain;
+import com.ares.knightmare.util.Maths;
 
 public class Entity {
 
 	private TexturedModel model;
 	private Vector3f position, cameraPosition;
-	private float yz, xz, roll, scale, distance = 10, height, ySpeed, GRAVITY = -0.03f;
+	private float rotX, rotY, rotZ, scale, distance = 10, ySpeed, GRAVITY = -0.03f;
 	private Camera camera;
 	private int textureIndex;
 
-	public Entity(TexturedModel model, Vector3f position, float xz, float yz, float roll, float scale) {
+	public Entity(TexturedModel model, Vector3f position, float rotY, float rotX, float rotZ, float scale) {
 		this.model = model;
 		this.position = position;
-		this.yz = yz;
-		this.xz = xz;
-		this.roll = roll;
+		this.rotX = rotX;
+		this.rotY = rotY;
+		this.rotZ = rotZ;
 		this.scale = scale;
-		height = model.getRawModel().getHeight();
 	}
 
-	public Entity(TexturedModel model, Vector3f position, float xz, float yz, float roll, float scale, int textureIndex) {
+	public Entity(TexturedModel model, Vector3f position, float rotY, float rotX, float rotZ, float scale, int textureIndex) {
 		this.model = model;
 		this.position = position;
-		this.yz = yz;
-		this.xz = xz;
-		this.roll = roll;
+		this.rotX = rotX;
+		this.rotY = rotY;
+		this.rotZ = rotZ;
 		this.scale = scale;
 		this.textureIndex = textureIndex;
-		height = model.getRawModel().getHeight();
 	}
 
+	public void tick(){
+		//TODO
+	}
+	
 	public void setCamera(Camera camera) {
 		this.camera = camera;
 		float[] args = calculateCam(distance);
@@ -59,46 +63,46 @@ public class Entity {
 	}
 
 	public void move(float ad, float ss, float ws) {
-		position.x += ad * Math.cos(Math.toRadians(xz)) - ws * Math.sin(Math.toRadians(xz));
+		position.x += ad * Math.cos(Math.toRadians(rotY)) - ws * Math.sin(Math.toRadians(rotY));
 		if (ySpeed == 0) {
 			ySpeed += ss * 7;
 		}
-		position.z += ws * Math.cos(Math.toRadians(xz)) + ad * Math.sin(Math.toRadians(xz));
+		position.z += ws * Math.cos(Math.toRadians(rotY)) + ad * Math.sin(Math.toRadians(rotY));
 
 		float[] args = calculateCam(distance);
 		camera.set(cameraPosition.x + args[3], cameraPosition.y + args[4], cameraPosition.z + args[5], args[0], args[1], args[2]);
 	}
 
-	public void rotate(float xz, float yz, float xy) {
-		this.xz += xz;
-		this.yz -= yz;
-		if (this.yz > 90) {
-			this.yz = 90;
-		} else if (this.yz < -90) {
-			this.yz = -90;
+	public void rotate(float rotY, float yz, float xy) {
+		this.rotY += rotY;
+		this.rotX -= yz;
+		if (this.rotX > 90) {
+			this.rotX = 90;
+		} else if (this.rotX < -90) {
+			this.rotX = -90;
 		}
-		roll += xy;
+		rotZ += xy;
 		float[] args = calculateCam(distance);
 		camera.set(cameraPosition.x + args[3], cameraPosition.y + args[4], cameraPosition.z + args[5], args[0], args[1], args[2]);
 	}
 
 	private float[] calculateCam(float distance) {
 		float[] args = new float[6];
-		args[0] = yz;
-		args[1] = xz;
-		args[2] = roll;
-		float sxz = (float) (distance * Math.cos(Math.toRadians(yz)));
-		args[3] = -(float) (sxz * Math.sin(Math.toRadians(xz)));
-		args[4] = (float) (distance * Math.sin(Math.toRadians(yz)));
-		args[5] = (float) (sxz * Math.cos(Math.toRadians(xz)));
-		cameraPosition = getTop(position);
+		args[0] = rotX;
+		args[1] = rotY;
+		args[2] = rotZ;
+		float sxz = (float) (distance * Math.cos(Math.toRadians(rotX)));
+		args[3] = -(float) (sxz * Math.sin(Math.toRadians(rotY)));
+		args[4] = (float) (distance * Math.sin(Math.toRadians(rotX)));
+		args[5] = (float) (sxz * Math.cos(Math.toRadians(rotY)));
+		cameraPosition = getTop();
 		return args;
 	}
 
-	private Vector3f getTop(Vector3f bottom) {
-		float s = (float) (height * Math.cos(Math.toRadians(90 + yz)));
-		return new Vector3f((float) (bottom.x - s * Math.sin(Math.toRadians(xz))), (float) (bottom.y + height * Math.sin(Math.toRadians(90 + yz))),
-				(float) (bottom.z + s * Math.cos(Math.toRadians(xz))));
+	private Vector3f getTop() {
+		float s = (float) (model.getRawModel().getToTop() * Math.cos(Math.toRadians(90 + rotX)));
+		return new Vector3f((float) (position.x - s * Math.sin(Math.toRadians(rotY))),
+				(float) (position.y + model.getRawModel().getToTop() * Math.sin(Math.toRadians(90 + rotX))), (float) (position.z + s * Math.cos(Math.toRadians(rotY))));
 	}
 
 	public float getTextureXOffset() {
@@ -141,28 +145,28 @@ public class Entity {
 		return camera;
 	}
 
-	public float getYz() {
-		return yz;
+	public float getRotX() {
+		return rotX;
 	}
 
-	public void setYz(float yz) {
-		this.yz = yz;
+	public void setRotX(float rotX) {
+		this.rotX = rotX;
 	}
 
-	public float getXz() {
-		return xz;
+	public float getRotY() {
+		return rotY;
 	}
 
-	public void setXz(float xz) {
-		this.xz = xz;
+	public void setRotY(float rotY) {
+		this.rotY = rotY;
 	}
 
-	public float getRoll() {
-		return roll;
+	public float getRotZ() {
+		return rotZ;
 	}
 
-	public void setRoll(float roll) {
-		this.roll = roll;
+	public void setRotZ(float rotZ) {
+		this.rotZ = rotZ;
 	}
 
 	public void zoom(float distance) {
@@ -172,6 +176,14 @@ public class Entity {
 		}
 		float[] args = calculateCam(this.distance);
 		camera.set(cameraPosition.x + args[3], cameraPosition.y + args[4], cameraPosition.z + args[5], args[0], args[1], args[2]);
+		
+		Vector3f[] corners = getCorners();//TODO
+	}
+
+	public Vector3f[] getCorners() {
+		RawModel model = this.model.getRawModel();
+		return Maths.calculateCorners(position, new Vector3f(model.getWidth(), model.getHeight(), model.getDepth()),
+				new Vector3f(model.getToRight(), model.getToTop(), model.getToEnd()), new Vector3f(rotX, rotY, rotZ));
 	}
 
 }

@@ -5,7 +5,7 @@ import java.util.TimerTask;
 
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 
-import com.ares.knightmare.entities.CameraHandler;
+import com.ares.knightmare.handler.CameraHandler;
 
 public class CursorPosListener extends GLFWCursorPosCallback {
 

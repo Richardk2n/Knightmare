@@ -2,7 +2,7 @@ package com.ares.knightmare.listener;
 
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 
-import com.ares.knightmare.entities.CameraHandler;
+import com.ares.knightmare.handler.CameraHandler;
 
 public class MouseButtonListener extends GLFWMouseButtonCallback{
 

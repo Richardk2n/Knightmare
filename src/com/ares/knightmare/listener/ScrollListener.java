@@ -2,7 +2,7 @@ package com.ares.knightmare.listener;
 
 import org.lwjgl.glfw.GLFWScrollCallback;
 
-import com.ares.knightmare.entities.CameraHandler;
+import com.ares.knightmare.handler.CameraHandler;
 
 public class ScrollListener extends GLFWScrollCallback{
 

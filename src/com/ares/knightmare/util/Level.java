@@ -67,7 +67,7 @@ public class Level {
 		
 //		Light light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));// TODO
 //		Light light1 = new Light(new Vector3f(150, 100, 100), new Vector3f(0, 0, 1));// TODO
-//		Light light2 = new Light(new Vector3f(150, 150, 100), new Vector3f(0, 1, 0));// TODO
+//		Light light2 = new Light(new Vector3f(150, 150, 100), new Vector3f(0, 1, 0));// TODO Light list and get 4 nearest for lighting
 		Light light3 = new Light(new Vector3f(0, 0, -25), new Vector3f(2, 0, 0), new Vector3f(0.01f, 0.01f, 0.001f));// TODO
 		Light light4 = new Light(new Vector3f(0, entity.getModel().getRawModel().getHeight()*2, -25), new Vector3f(2, 0, 0), new Vector3f(0.01f, 0.01f, 0.001f));// TODO
 //		renderer.addLight(light);

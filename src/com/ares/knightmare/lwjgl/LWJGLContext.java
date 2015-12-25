@@ -29,8 +29,9 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import com.ares.knightmare.entities.CameraHandler;
+
 import com.ares.knightmare.entities.Overseher;
+import com.ares.knightmare.handler.CameraHandler;
 import com.ares.knightmare.listener.KeyListener;
 import com.ares.knightmare.listener.MouseButtonListener;
 import com.ares.knightmare.listener.ScrollListener;

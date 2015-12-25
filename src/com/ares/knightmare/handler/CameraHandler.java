@@ -1,4 +1,7 @@
-package com.ares.knightmare.entities;
+package com.ares.knightmare.handler;
+
+import com.ares.knightmare.entities.Camera;
+import com.ares.knightmare.entities.Entity;
 
 public class CameraHandler {
 

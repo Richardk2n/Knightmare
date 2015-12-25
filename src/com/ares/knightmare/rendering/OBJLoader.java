@@ -11,6 +11,7 @@ import java.util.List;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
+import com.ares.knightmare.models.ModelData;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.util.Vertex;
 
@@ -21,7 +22,12 @@ public class OBJLoader {
 	public static RawModel loadObjModel(String fileName, Loader loader){
 		ModelData data = loadOBJ(fileName);
 		RawModel model = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());
+		model.setWidth(data.getWidth());
 		model.setHeight(data.getHeight());
+		model.setDepth(data.getDepth());
+		model.setToRight(data.getToRight());
+		model.setToTop(data.getToTop());
+		model.setToEnd(data.getToEnd());
 		return model;
 	}
 	
@@ -39,7 +45,12 @@ public class OBJLoader {
 		List<Vector2f> textures = new ArrayList<Vector2f>();
 		List<Vector3f> normals = new ArrayList<Vector3f>();
 		List<Integer> indices = new ArrayList<Integer>();
+		float x = 0;
 		float y = 0;
+		float z = 0;
+		float mx = 0;
+		float my = 0;
+		float mz = 0;
 		try {
 			while (true) {
 				line = reader.readLine();
@@ -48,7 +59,12 @@ public class OBJLoader {
 					Vector3f vertex = new Vector3f((float) Float.valueOf(currentLine[1]),
 							(float) Float.valueOf(currentLine[2]),
 							(float) Float.valueOf(currentLine[3]));
+					x = Math.max(x, Float.valueOf(currentLine[1]));
 					y = Math.max(y, Float.valueOf(currentLine[2]));
+					z = Math.max(z, Float.valueOf(currentLine[3]));
+					mx = Math.min(mx, Float.valueOf(currentLine[1]));
+					my = Math.min(my, Float.valueOf(currentLine[2]));
+					mz = Math.min(mz, Float.valueOf(currentLine[3]));
 					Vertex newVertex = new Vertex(vertices.size(), vertex);
 					vertices.add(newVertex);
 
@@ -90,7 +106,12 @@ public class OBJLoader {
 		int[] indicesArray = convertIndicesListToArray(indices);
 		ModelData data = new ModelData(verticesArray, texturesArray, normalsArray, indicesArray,
 				furthest);
-		data.setHeight(y);
+		data.setWidth(x-mx);
+		data.setHeight(y-my);
+		data.setDepth(z-mz);
+		data.setToRight(x);
+		data.setToTop(y);
+		data.setToEnd(z);
 		return data;
 	}
 

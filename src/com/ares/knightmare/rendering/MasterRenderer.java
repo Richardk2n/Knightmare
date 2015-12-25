@@ -91,7 +91,7 @@ public class MasterRenderer {
 		
 		//skybox
 		skyboxShader.start();
-		skyboxRenderer.render(camera);
+		skyboxRenderer.render(camera, SKY_R, SKY_G, SKY_B);
 		staticShader.stop();
 		
 		//gui
