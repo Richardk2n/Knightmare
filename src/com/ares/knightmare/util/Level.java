@@ -7,6 +7,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.ares.knightmare.entities.Entity;
+import com.ares.knightmare.entities.EntityFactory;
 import com.ares.knightmare.entities.Light;
 import com.ares.knightmare.models.ModelTexture;
 import com.ares.knightmare.models.RawModel;
@@ -23,12 +24,7 @@ public class Level {
 	private Entity q;
 
 	public Level(MasterRenderer renderer, Loader loader) {
-		RawModel model = OBJLoader.loadObjModel("lamp", loader);
-		TexturedModel texturedModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("lamp")));
-		ModelTexture texture = texturedModel.getTexture();
-		texture.setShineDamper(1);
-		texture.setReflectivity(0);
-		Entity entity = new Entity(texturedModel, new Vector3f(0, 0, -25), 0, 0, 0, 1);
+		Entity entity = EntityFactory.createEntity(loader, "lamp", "lamp", false, new Vector3f(0, 0, -25), new Vector3f(0, 0, 0), 1, 1, 0);
 
 		RawModel modelg = OBJLoader.loadObjModel("fern", loader);
 		TexturedModel texturedModelg = new TexturedModel(modelg, new ModelTexture(loader.loadTexture("fern")));
@@ -75,7 +71,7 @@ public class Level {
 //		renderer.addLight(light2);
 		renderer.addLight(light3);
 		renderer.addLight(light4);
-//		renderer.addSun(light);
+		renderer.addSun(light);
 
 		new Timer(true).scheduleAtFixedRate(new TimerTask() {
 
