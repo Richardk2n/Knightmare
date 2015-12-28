@@ -32,12 +32,12 @@ void main(void){
 		vec3 lightDirection = -unitLightVector;
 		vec3 reflectetLightDirection = reflect(lightDirection, unitNormal);
 		float specularFactor = dot(reflectetLightDirection, unitVectorToCamera);
-		specularFactor = max(specularFactor,0.1);
+		specularFactor = max(specularFactor,0.03);
 		float dampedFactor = pow(specularFactor,shineDamper);
 		totalDiffuse = totalDiffuse + (brightness * lightColor[i])/attFactor;
 		totalSpecular = totalSpecular + (dampedFactor * reflectivity * lightColor[i])/attFactor;
 	}
-	totalDiffuse = max(totalDiffuse, 0.1);
+	totalDiffuse = max(totalDiffuse, 0.02);
 
 	vec4 textureColor = texture(textureSampler, pass_textureCoordinates);
 	if(textureColor.a<0.5){
