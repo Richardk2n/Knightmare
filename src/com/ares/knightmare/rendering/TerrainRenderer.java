@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import com.ares.knightmare.handler.LightHandler;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.shaders.TerrainShader;
 import com.ares.knightmare.terrain.Terrain;
@@ -18,13 +19,15 @@ import com.ares.knightmare.util.Maths;
 public class TerrainRenderer {
 
 	private TerrainShader shader;
+	private LightHandler handler;
 
-	public TerrainRenderer(TerrainShader shader, Matrix4f projectionMatrix) {
+	public TerrainRenderer(TerrainShader shader, Matrix4f projectionMatrix, LightHandler handler) {
 		this.shader = shader;
 		shader.start();
 		shader.loadProjctionMatrix(projectionMatrix);
 		shader.connectTextureUnits();
 		shader.stop();
+		this.handler = handler;
 	}
 
 	public void render(List<Terrain> terrains) {
@@ -70,5 +73,6 @@ public class TerrainRenderer {
 	private void loadModelMatrix(Terrain terrain) {
 		Matrix4f transformationMatrix = Maths.createTransformationMatrix(new Vector3f(terrain.getX(), 0, terrain.getZ()), 0, 0, 0, 1);
 		shader.loadTransformationMatrix(transformationMatrix);
+		shader.loadLights(handler.getNearestLights(terrain.getCentralPosition()));//TODO switch for camera?
 	}
 }

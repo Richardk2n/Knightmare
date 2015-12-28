@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
 import com.ares.knightmare.entities.Entity;
+import com.ares.knightmare.handler.LightHandler;
 import com.ares.knightmare.models.ModelTexture;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.models.TexturedModel;
@@ -19,12 +20,14 @@ import com.ares.knightmare.util.Maths;
 public class EntityRenderer {
 
 	private StaticShader shader;
+	private LightHandler handler;
 
-	public EntityRenderer(StaticShader shader, Matrix4f projectionMatrix) {
+	public EntityRenderer(StaticShader shader, Matrix4f projectionMatrix, LightHandler handler) {
 		this.shader = shader;
 		shader.start();
 		shader.loadProjctionMatrix(projectionMatrix);
 		shader.stop();
+		this.handler = handler;
 	}
 
 	public void render(Map<TexturedModel, List<Entity>> entities) {
@@ -68,6 +71,7 @@ public class EntityRenderer {
 		Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(), -entity.getRotX(), -entity.getRotY(), -entity.getRotZ(), entity.getScale());
 		shader.loadTransformationMatrix(transformationMatrix);
 		shader.loadOffset(entity.getTextureXOffset(), entity.getTextureYOffset());
+		shader.loadLights(handler.getNearestLights(entity.getPosition()));
 	}
 
 }

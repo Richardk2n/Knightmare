@@ -6,17 +6,15 @@ import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 
 import com.ares.knightmare.entities.Camera;
 import com.ares.knightmare.entities.Entity;
 import com.ares.knightmare.entities.Light;
-import com.ares.knightmare.models.TexturedModel;
+import com.ares.knightmare.handler.ChunkHandler;
+import com.ares.knightmare.handler.LightHandler;
 import com.ares.knightmare.shaders.GuiShader;
 import com.ares.knightmare.shaders.SkyboxShader;
 import com.ares.knightmare.shaders.StaticShader;
@@ -36,13 +34,14 @@ public class MasterRenderer {
 	private GuiRenderer guiRenderer;
 	private SkyboxShader skyboxShader = new SkyboxShader();
 	private SkyboxRenderer skyboxRenderer;
+	
+	private ChunkHandler chunkHandler = new ChunkHandler();
+	private LightHandler lightHandler = new LightHandler();
 
 	private Matrix4f projectionMatrix;
 
 	private int width, height;
 
-	private List<Light> lights = new ArrayList<>();
-	private Map<TexturedModel, List<Entity>> entities = new HashMap<>();
 	private List<Terrain> terrains = new ArrayList<>();
 	private List<GuiTexture> guis = new ArrayList<>();
 
@@ -51,8 +50,8 @@ public class MasterRenderer {
 		this.height = height;
 		enableCulling();
 		createProjectionMatrix();
-		entityRenderer = new EntityRenderer(staticShader, projectionMatrix);
-		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+		entityRenderer = new EntityRenderer(staticShader, projectionMatrix, lightHandler);
+		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix, lightHandler);
 		guiRenderer = new GuiRenderer(guiShader, loader);
 		skyboxRenderer = new SkyboxRenderer(skyboxShader, projectionMatrix, loader);
 	}
@@ -76,15 +75,15 @@ public class MasterRenderer {
 		//entities
 		staticShader.start();
 		staticShader.loadSkyColor(SKY_R, SKY_G, SKY_B);
-		staticShader.loadLights(lights);
+//		staticShader.loadLights(lights);
 		staticShader.loadViewMatrix(camera);
-		entityRenderer.render(entities);
+		entityRenderer.render(chunkHandler.getRenderedEntities(camera));
 		staticShader.stop();
 		
 		//terrain
 		terrainShader.start();
 		terrainShader.loadSkyColor(SKY_R, SKY_G, SKY_B);
-		terrainShader.loadLights(lights);
+//		terrainShader.loadLights(lights);
 		terrainShader.loadViewMatrix(camera);
 		terrainRenderer.render(terrains);
 		terrainShader.stop();
@@ -117,28 +116,27 @@ public class MasterRenderer {
 	}
 	
 	public void addLight(Light light) {
-		lights.add(light);
+		lightHandler.store(light);
 	}
 	
 	public void removeLight(Light light) {
-		lights.remove(light);
+		lightHandler.remove(light);
+	}
+	
+	public void addSun(Light sun) {
+		lightHandler.setSun(sun);
+	}
+	
+	public void removeSun() {
+		lightHandler.setSun(null);
 	}
 	
 	public void addEntity(Entity entity) {
-		TexturedModel entityModel = entity.getModel();
-		List<Entity> batch = entities.get(entityModel);
-		if (batch == null) {
-			List<Entity> newBatch = new ArrayList<>();
-			newBatch.add(entity);
-			entities.put(entityModel, newBatch);
-		} else {
-			batch.add(entity);
-		}
+		chunkHandler.store(entity);
 	}
 	
 	public void removeEntity(Entity entity) {
-		TexturedModel entityModel = entity.getModel();
-		entities.get(entityModel).remove(entity);
+		chunkHandler.remove(entity);
 	}
 
 	public void cleanUp() {

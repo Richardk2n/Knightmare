@@ -149,4 +149,8 @@ public class Terrain {
 		return blendMap;
 	}
 
+	public Vector3f getCentralPosition() {
+		return new Vector3f((x + SIZE) / 2, (MIN_HEIGHT + MAX_HEIGHT) / 2, (z + SIZE) / 2);
+	}
+
 }

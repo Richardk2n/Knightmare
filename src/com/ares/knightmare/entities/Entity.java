@@ -11,7 +11,7 @@ public class Entity {
 
 	private TexturedModel model;
 	private Vector3f position, cameraPosition;
-	private float rotX, rotY, rotZ, scale, distance = 10, ySpeed, GRAVITY = -0.03f;
+	private float rotX, rotY, rotZ, scale, distance = 10, xSpeed, ySpeed, zSpeed, BRAKE = -0.03f, GRAVITY = -0.03f; //TODO use
 	private Camera camera;
 	private int textureIndex;
 
@@ -33,10 +33,6 @@ public class Entity {
 		this.scale = scale;
 		this.textureIndex = textureIndex;
 	}
-
-	public void tick(){
-		//TODO
-	}
 	
 	public void setCamera(Camera camera) {
 		this.camera = camera;
@@ -49,8 +45,8 @@ public class Entity {
 	}
 
 	public void tick(Terrain terrain) {
-		ySpeed += GRAVITY;
 		position.y += ySpeed;
+		ySpeed += GRAVITY;
 		float terrainHeight = terrain.getHeightOfTerrain(position.x, position.z);
 		if (position.y < terrainHeight) {
 			ySpeed = 0;
@@ -65,7 +61,7 @@ public class Entity {
 	public void move(float ad, float ss, float ws) {
 		position.x += ad * Math.cos(Math.toRadians(rotY)) - ws * Math.sin(Math.toRadians(rotY));
 		if (ySpeed == 0) {
-			ySpeed += ss * 7;
+			ySpeed = ss * 7;
 		}
 		position.z += ws * Math.cos(Math.toRadians(rotY)) + ad * Math.sin(Math.toRadians(rotY));
 

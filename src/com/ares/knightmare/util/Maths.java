@@ -66,6 +66,11 @@ public class Maths {
 		}
 		return corners;
 	}
+	
+	public static float calculateDistance(Vector3f point1, Vector3f point2){
+		Vector3f distance = Vector3f.sub(point2, point1, null);
+		return distance.length();
+	}
 
 	public static Vector3f calculateIntersection(Vector3f left, Vector3f middle, Vector3f right, Vector3f ray1, Vector3f ray2) {
 		Vector3f ml = Vector3f.sub(left, middle, null);
