@@ -181,5 +181,9 @@ public class Entity {
 		return Maths.calculateCorners(position, new Vector3f(model.getWidth(), model.getHeight(), model.getDepth()),
 				new Vector3f(model.getToRight(), model.getToTop(), model.getToEnd()), new Vector3f(rotX, rotY, rotZ));
 	}
+	
+	public void screem(){
+		System.out.println("You got me!");
+	}
 
 }

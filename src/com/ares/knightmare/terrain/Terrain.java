@@ -15,7 +15,7 @@ import com.ares.knightmare.util.Maths;
 
 public class Terrain {
 
-	private static final float SIZE = 800, MAX_HEIGHT = 40, MIN_HEIGHT = -40, MAX_PIXEL_COLOR = 256 * 256 * 256;
+	private static final float SIZE = 100, MAX_HEIGHT = 10, MIN_HEIGHT = -10, MAX_PIXEL_COLOR = 256 * 256 * 256;
 
 	private float x, z, heights[][];
 	private RawModel model;
@@ -33,7 +33,7 @@ public class Terrain {
 	private RawModel generateTerrain(Loader loader, String heightMap) {
 		BufferedImage image = null;
 		try {
-			image = ImageIO.read(new File(new StringBuilder("res/heightmaps/").append(heightMap).append(".png").toString()));
+			image = ImageIO.read(new File(new StringBuilder("res/maps/height/").append(heightMap).append(".png").toString()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

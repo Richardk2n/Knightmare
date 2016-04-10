@@ -7,7 +7,7 @@ public class TimeHandler {
 
 	private static final int TIME_BETWEEN_TICKS = 10;
 	
-	public TimeHandler(ChunkHandler chunkHandler){
+	public TimeHandler(EntityHandler chunkHandler){//TODO
 		new Timer(true).scheduleAtFixedRate(new TimerTask() {
 			
 			@Override

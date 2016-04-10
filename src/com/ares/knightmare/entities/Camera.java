@@ -19,13 +19,14 @@ public class Camera {
 		position.z -= ws * Math.cos(Math.toRadians(xz)) - ad * Math.sin(Math.toRadians(xz));
 	}
 
-	public void set(float x, float y, float z, float yz, float xz, float roll) {
+	public Camera set(float x, float y, float z, float yz, float xz, float roll) {
 		position.x = x;
 		position.y = y;
 		position.z = z;
 		this.yz = yz;
 		this.xz = xz;
 		this.roll = roll;
+		return this;
 	}
 
 	public void rotate(float xz, float yz, float xy) {
@@ -61,6 +62,14 @@ public class Camera {
 
 	public int getHeight() {
 		return height;
+	}
+	
+	public void invertPitch(){
+		yz = -yz;
+	}
+	
+	public Camera clone(){
+		return new Camera(width, height).set(position.x, position.y, position.z, yz, xz, roll);
 	}
 
 }

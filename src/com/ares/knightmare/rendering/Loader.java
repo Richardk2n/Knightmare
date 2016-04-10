@@ -46,9 +46,9 @@ public class Loader {
 		return new RawModel(vaoID, positions.length / diemensions);
 	}
 
-	public int loadTexture(String fileName) {
+	public int loadTexture(String fileName, String type) {
 		Texture texture = null;
-		texture = new Texture(new StringBuilder("res/textures/").append(fileName).append(".png").toString());
+		texture = new Texture(new StringBuilder("res/").append(type).append("/").append(fileName).append(".png").toString());
 		GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -0.4f);

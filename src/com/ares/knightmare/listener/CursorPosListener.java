@@ -13,6 +13,7 @@ public class CursorPosListener extends GLFWCursorPosCallback {
 	private Timer timer;
 	
 	private static final int amount = 1, period = 20, border = 100;
+	private static double posX, posY;
 
 	public CursorPosListener(CameraHandler cameraHandler) {
 		super();
@@ -24,6 +25,8 @@ public class CursorPosListener extends GLFWCursorPosCallback {
 	public void invoke(long window, double xpos, double ypos) {
 		timer.cancel();
 		timer = new Timer(true);
+		setPosX(xpos);
+		setPosY(ypos);
 		if (xpos < border) {
 			timer.scheduleAtFixedRate(new TimerTask() {
 
@@ -60,5 +63,21 @@ public class CursorPosListener extends GLFWCursorPosCallback {
 				}
 			}, 0, period);
 		}
+	}
+
+	public static double getPosX() {
+		return posX;
+	}
+
+	public static void setPosX(double posX) {
+		CursorPosListener.posX = posX;
+	}
+
+	public static double getPosY() {
+		return posY;
+	}
+
+	public static void setPosY(double posY) {
+		CursorPosListener.posY = posY;
 	}
 }

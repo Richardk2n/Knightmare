@@ -3,7 +3,7 @@ package com.ares.knightmare.models;
 public class RawModel {
 
 	private int vaoID, vertexCount;
-	private float height, width, depth, toTop, toRight, toEnd;;
+	private float height, width, depth, toTop, toRight, toEnd;
 	
 	public RawModel(int vaoID, int vertexCount){
 		this.vaoID = vaoID;

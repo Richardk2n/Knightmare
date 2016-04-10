@@ -14,15 +14,15 @@ import com.ares.knightmare.handler.LightHandler;
 import com.ares.knightmare.models.ModelTexture;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.models.TexturedModel;
-import com.ares.knightmare.shaders.StaticShader;
+import com.ares.knightmare.shaders.EntityShader;
 import com.ares.knightmare.util.Maths;
 
 public class EntityRenderer {
 
-	private StaticShader shader;
+	private EntityShader shader;
 	private LightHandler handler;
 
-	public EntityRenderer(StaticShader shader, Matrix4f projectionMatrix, LightHandler handler) {
+	public EntityRenderer(EntityShader shader, Matrix4f projectionMatrix, LightHandler handler) {
 		this.shader = shader;
 		shader.start();
 		shader.loadProjctionMatrix(projectionMatrix);
