@@ -38,6 +38,17 @@ public class Loader {
 		unbindVAO();
 		return new RawModel(vaoID, indices.length);
 	}
+	
+	public RawModel loadToVAO(float[] positions, float[] textureCoordinates, float[] normals, int[] indices, float[] tangents) {
+		int vaoID = createVAO();
+		bindIndicesBuffer(indices);
+		storeDataInAtrributeList(0, 3, positions);
+		storeDataInAtrributeList(1, 2, textureCoordinates);
+		storeDataInAtrributeList(2, 3, normals);
+		storeDataInAtrributeList(3, 3, tangents);
+		unbindVAO();
+		return new RawModel(vaoID, indices.length);
+	}
 
 	public RawModel loadToVAO(float[] positions, int diemensions) {
 		int vaoID = createVAO();
@@ -127,6 +138,11 @@ public class Loader {
 
 	private void unbindVAO() {
 		GL30.glBindVertexArray(0);
+	}
+	
+	public void deleteVAO(int id){
+		vaos.remove((Integer)id);
+		GL30.glDeleteVertexArrays(id);
 	}
 
 	private void bindIndicesBuffer(int[] indices) {

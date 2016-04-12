@@ -15,18 +15,22 @@ import com.ares.knightmare.util.Maths;
 
 public class Terrain {
 
-	private static final float SIZE = 100, MAX_HEIGHT = 10, MIN_HEIGHT = -10, MAX_PIXEL_COLOR = 256 * 256 * 256;
+	private static final float SIZE = 100, MAX_HEIGHT = 5, MIN_HEIGHT = -5, MAX_PIXEL_COLOR = 256 * 256 * 256;
 
-	private float x, z, heights[][];
+	private float x, z, heights[][], height;
 	private RawModel model;
 	private TerrainTexturePack texturePack;
 	private TerrainTexture blendMap;
+	
+	private float[] vertices, normals, textureCoords;
+	private int[] indices;
 
-	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texturePack, TerrainTexture blendMap, String heightMap) {
+	public Terrain(int gridX, int gridZ, float height, Loader loader, TerrainTexturePack texturePack, TerrainTexture blendMap, String heightMap) {
 		this.texturePack = texturePack;
 		this.blendMap = blendMap;
 		x = gridX * SIZE;
 		z = gridZ * SIZE;
+		this.height = height;
 		model = generateTerrain(loader, heightMap);
 	}
 
@@ -40,10 +44,10 @@ public class Terrain {
 		int VERTEX_COUNT = image.getHeight();
 		heights = new float[VERTEX_COUNT][VERTEX_COUNT];
 		int count = VERTEX_COUNT * VERTEX_COUNT;
-		float[] vertices = new float[count * 3];
-		float[] normals = new float[count * 3];
-		float[] textureCoords = new float[count * 2];
-		int[] indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
+		vertices = new float[count * 3];
+		normals = new float[count * 3];
+		textureCoords = new float[count * 2];
+		indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
 		int vertexPointer = 0;
 		for (int i = 0; i < VERTEX_COUNT; i++) {
 			for (int j = 0; j < VERTEX_COUNT; j++) {
@@ -60,6 +64,30 @@ public class Terrain {
 				textureCoords[vertexPointer * 2 + 1] = (float) i / ((float) VERTEX_COUNT - 1);
 				vertexPointer++;
 			}
+		}
+		for(int i = 0; i < VERTEX_COUNT; i++){
+			vertexPointer = i*VERTEX_COUNT;
+			normals[vertexPointer * 3] = 0;
+			normals[vertexPointer * 3 + 1] = 1;
+			normals[vertexPointer * 3 + 2] = 0;
+		}
+		for(int i = 0; i < VERTEX_COUNT; i++){
+			vertexPointer = i*VERTEX_COUNT + VERTEX_COUNT-1;
+			normals[vertexPointer * 3] = 0;
+			normals[vertexPointer * 3 + 1] = 1;
+			normals[vertexPointer * 3 + 2] = 0;
+		}
+		for(int j = 0; j < VERTEX_COUNT; j++){
+			vertexPointer = j;
+			normals[vertexPointer * 3] = 0;
+			normals[vertexPointer * 3 + 1] = 1;
+			normals[vertexPointer * 3 + 2] = 0;
+		}
+		for(int j = 0; j < VERTEX_COUNT; j++){
+			vertexPointer = (VERTEX_COUNT-1)*VERTEX_COUNT+j;
+			normals[vertexPointer * 3] = 0;
+			normals[vertexPointer * 3 + 1] = 1;
+			normals[vertexPointer * 3 + 2] = 0;
 		}
 		int pointer = 0;
 		for (int gz = 0; gz < VERTEX_COUNT - 1; gz++) {
@@ -98,7 +126,7 @@ public class Terrain {
 		height /= MAX_PIXEL_COLOR / 2f;
 		height *= MAX_HEIGHT;
 		height = Math.max(height, MIN_HEIGHT);
-		return height;
+		return height + this.height;
 	}
 
 	public float getHeightOfTerrain(float worldX, float worldZ) {
@@ -136,6 +164,10 @@ public class Terrain {
 	public float getZ() {
 		return z;
 	}
+	
+	public float getHeight() {
+		return height;
+	}
 
 	public RawModel getModel() {
 		return model;
@@ -151,6 +183,18 @@ public class Terrain {
 
 	public Vector3f getCentralPosition() {
 		return new Vector3f((x + SIZE) / 2, (MIN_HEIGHT + MAX_HEIGHT) / 2, (z + SIZE) / 2);
+	}
+	
+	public void alterTerrain(int x, int z, float height, Loader loader){
+		int vertexPointer = z*heights.length+x;
+		heights[x][z] = height;
+		vertices[vertexPointer * 3 + 1] = height;
+//		Vector3f normal = calculateNormal(x, z, image);TODO
+//		normals[vertexPointer * 3] = normal.x;
+//		normals[vertexPointer * 3 + 1] = normal.y;
+//		normals[vertexPointer * 3 + 2] = normal.z;
+		loader.deleteVAO(model.getVaoID());
+		model = loader.loadToVAO(vertices, textureCoords, normals, indices);
 	}
 
 }

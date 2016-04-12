@@ -2,7 +2,7 @@ package com.ares.knightmare.models;
 
 public class ModelTexture {
 
-	private int textureID, numberOfRows = 1;
+	private int textureID, numberOfRows = 1, normalMap;
 	private float shineDamper = 1, reflectivity = 0;
 
 	private boolean hasTransparency = false, useFakeLighting = false;
@@ -57,5 +57,13 @@ public class ModelTexture {
 
 	public void setNumberOfRows(int numberOfRows) {
 		this.numberOfRows = numberOfRows;
+	}
+
+	public int getNormalMap() {
+		return normalMap;
+	}
+
+	public void setNormalMap(int normalMap) {
+		this.normalMap = normalMap;
 	}
 }

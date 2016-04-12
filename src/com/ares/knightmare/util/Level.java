@@ -13,6 +13,7 @@ import com.ares.knightmare.entities.WaterTile;
 import com.ares.knightmare.models.ModelTexture;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.models.TexturedModel;
+import com.ares.knightmare.normalMapping.NormalMappedObjLoader;
 import com.ares.knightmare.rendering.Loader;
 import com.ares.knightmare.rendering.MasterRenderer;
 import com.ares.knightmare.rendering.OBJLoader;
@@ -46,12 +47,22 @@ public class Level {
 
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, bTexture, gTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap", "maps/blend"));
-		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "heightmapA");
+		Terrain terrain = new Terrain(0, -1, 0, loader, texturePack, blendMap, "heightmapA");
+		Terrain terrain2 = new Terrain(0, -2, 10, loader, texturePack, blendMap, "heightmapB");
+		Terrain terrain3 = new Terrain(-1, -1, 10, loader, texturePack, blendMap, "heightmapB");
+		Terrain terrain4 = new Terrain(-1, -2, 10, loader, texturePack, blendMap, "heightmapB");
+		Terrain terrain5 = new Terrain(0, 0, 10, loader, texturePack, blendMap, "heightmapB");
+		Terrain terrain6 = new Terrain(-1, 0, 10, loader, texturePack, blendMap, "heightmapB");
 
 		renderer.addEntity(entity);
 		renderer.addEntity(gras);
 		renderer.addEntity(q);
 		renderer.addTerrain(terrain);
+		renderer.addTerrain(terrain2);
+		renderer.addTerrain(terrain3);
+		renderer.addTerrain(terrain4);
+		renderer.addTerrain(terrain5);
+		renderer.addTerrain(terrain6);
 
 		GuiTexture gui = new GuiTexture(loader.loadTexture("health", "textures/gui"), new Vector2f(0.75f, 0.85f), new Vector2f(0.25f, 0.25f));
 		renderer.addGui(gui);
@@ -65,19 +76,26 @@ public class Level {
 		Light light4 = new Light(new Vector3f(0, entity.getModel().getRawModel().getHeight() * 2, -25), new Vector3f(2, 0, 0), new Vector3f(0.01f, 0.01f, 0.001f));// TODO
 		// renderer.addLight(light);
 		// renderer.addLight(light1);
-		// renderer.addLight(light2);
+//		 renderer.addLight(light2);
 		renderer.addLight(light3);
 		renderer.addLight(light4);
 		renderer.addSun(light);
 
 		WaterTile water = new WaterTile(50, -50, 0);
 		renderer.addWater(water);
+		
+		TexturedModel barrelModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("barrel", loader), new ModelTexture(loader.loadTexture("barrel", "textures")));
+		barrelModel.getTexture().setNormalMap(loader.loadTexture("barrelNormal", "maps/normal"));
+		barrelModel.getTexture().setShineDamper(10);
+		barrelModel.getTexture().setReflectivity(0.5f);
+		
+		renderer.addNormalMappedEntity(new Entity(barrelModel, new Vector3f(0, 8, 40), 0, 0, 0, 0.25f));
 
 		new Timer(true).scheduleAtFixedRate(new TimerTask() {
 
 			@Override
 			public void run() {
-				q.tick(terrain);
+				q.tick(renderer.getTerrainHandler());
 				water.tick();
 			}
 		}, 0, 10);

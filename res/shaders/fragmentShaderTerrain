@@ -20,12 +20,14 @@ uniform float shineDamper;
 uniform float reflectivity;
 uniform vec3 skyColor;
 
+const float tiling = 40.0;
+
 void main(void){
 
 	vec4 blendMapColor = texture(blendMap, pass_textureCoordinates);
 	
 	float backgroundTextureAmount = 1- (blendMapColor.r + blendMapColor.g, blendMapColor.b);
-	vec2 tiledCoords = pass_textureCoordinates * 40.0;
+	vec2 tiledCoords = pass_textureCoordinates * tiling;
 	vec4 backgroundTextureColor = texture(backgroundTexture, tiledCoords) * backgroundTextureAmount;
 	vec4 rTextureColor = texture(rTexture, tiledCoords) * blendMapColor.r;
 	vec4 gTextureColor = texture(gTexture, tiledCoords) * blendMapColor.g;

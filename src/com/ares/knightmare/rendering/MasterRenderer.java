@@ -17,8 +17,10 @@ import com.ares.knightmare.entities.Light;
 import com.ares.knightmare.entities.WaterTile;
 import com.ares.knightmare.handler.EntityHandler;
 import com.ares.knightmare.handler.LightHandler;
+import com.ares.knightmare.handler.NormalMappedEntityHandler;
 import com.ares.knightmare.handler.TerrainHandler;
 import com.ares.knightmare.handler.WaterHandler;
+import com.ares.knightmare.normalMapping.NormalMappingRenderer;
 import com.ares.knightmare.shaders.GuiShader;
 import com.ares.knightmare.shaders.SkyboxShader;
 import com.ares.knightmare.shaders.EntityShader;
@@ -30,7 +32,8 @@ import com.ares.knightmare.util.WaterFrameBuffers;
 
 public class MasterRenderer {
 
-	private static final float FOV = 70, NEAR_PLANE = 0.1f, FAR_PLANE = 1000, SKY_R = 0.4f, SKY_G = 0.5f, SKY_B = 0.5f;
+	private static final float FOV = 70, NEAR_PLANE = 0.1f, FAR_PLANE = 1000;
+	public static final float SKY_R = 0.4f, SKY_G = 0.5f, SKY_B = 0.5f;
 
 	private EntityShader entityShader = new EntityShader();
 	private EntityRenderer entityRenderer;
@@ -43,7 +46,10 @@ public class MasterRenderer {
 	private WaterShader waterShader = new WaterShader();
 	private WaterRenderer waterRenderer;
 	
+	private NormalMappingRenderer normalMappingRenderer;
+	
 	private EntityHandler entityHandler = new EntityHandler();
+	private NormalMappedEntityHandler normalMappedEntityHandler = new NormalMappedEntityHandler();
 	private LightHandler lightHandler = new LightHandler();
 	private TerrainHandler terrainHandler = new TerrainHandler();
 	private WaterHandler waterHandler = new WaterHandler();
@@ -64,6 +70,7 @@ public class MasterRenderer {
 		guiRenderer = new GuiRenderer(guiShader, loader);
 		skyboxRenderer = new SkyboxRenderer(skyboxShader, projectionMatrix, loader);
 		waterRenderer = new WaterRenderer(waterShader, projectionMatrix, loader, fbos, lightHandler);
+		normalMappingRenderer = new NormalMappingRenderer(projectionMatrix, lightHandler);
 	}
 
 	public static void enableCulling() {
@@ -89,6 +96,9 @@ public class MasterRenderer {
 		entityShader.loadViewMatrix(camera);
 		entityRenderer.render(entityHandler.getRenderedEntities(camera));
 		entityShader.stop();
+		
+		//normal mapped entities
+		normalMappingRenderer.render(normalMappedEntityHandler.getRenderedEntities(camera), plane, camera);
 		
 		//terrain
 		terrainShader.start();
@@ -158,6 +168,14 @@ public class MasterRenderer {
 		entityHandler.remove(entity);
 	}
 	
+	public void addNormalMappedEntity(Entity entity) {
+		normalMappedEntityHandler.store(entity);
+	}
+	
+	public void removeNormalMappedEntity(Entity entity) {
+		normalMappedEntityHandler.remove(entity);
+	}
+	
 	public void addWater(WaterTile water) {
 		waterHandler.store(water);
 	}
@@ -172,6 +190,7 @@ public class MasterRenderer {
 		guiShader.cleanUp();
 		skyboxShader.cleanUp();
 		waterShader.cleanUp();
+		normalMappingRenderer.cleanUp();
 	}
 
 	private void createProjectionMatrix() {
@@ -191,5 +210,9 @@ public class MasterRenderer {
 	
 	public Matrix4f getProjectionMatrix(){
 		return projectionMatrix;
+	}
+	
+	public TerrainHandler getTerrainHandler(){
+		return terrainHandler;
 	}
 }

@@ -2,6 +2,7 @@ package com.ares.knightmare.entities;
 
 import org.lwjgl.util.vector.Vector3f;
 
+import com.ares.knightmare.handler.TerrainHandler;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.models.TexturedModel;
 import com.ares.knightmare.terrain.Terrain;
@@ -44,10 +45,10 @@ public class Entity {
 		return camera != null;
 	}
 
-	public void tick(Terrain terrain) {
+	public void tick(TerrainHandler terrainHandler) {
 		position.y += ySpeed;
 		ySpeed += GRAVITY;
-		float terrainHeight = terrain.getHeightOfTerrain(position.x, position.z);
+		float terrainHeight = terrainHandler.getHeightOfTerrain(position.x, position.z);
 		if (position.y < terrainHeight) {
 			ySpeed = 0;
 			position.y = terrainHeight;

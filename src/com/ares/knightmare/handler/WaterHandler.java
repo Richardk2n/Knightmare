@@ -30,7 +30,7 @@ public class WaterHandler {
 		List<WaterTile> waters = new ArrayList<>();
 		for (WaterTile water : this.waters) {
 			int xE = (int) Math.floor(water.getX()/CHUNCK_SIZE);
-			int yE = 0;
+			int yE = (int) Math.floor(water.getHeight()/CHUNCK_SIZE);
 			int zE = (int) Math.floor(water.getZ()/CHUNCK_SIZE);
 
 			if (x - RENDER_DISTANCE <= xE && xE <= x + RENDER_DISTANCE && y - RENDER_DISTANCE <= yE && yE <= y + RENDER_DISTANCE && z - RENDER_DISTANCE <= zE

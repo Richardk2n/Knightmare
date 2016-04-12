@@ -29,9 +29,9 @@ public class TerrainHandler {
 
 		List<Terrain> terrains = new ArrayList<>();
 		for (Terrain terrain : this.terrains) {
-			int xE = (int) terrain.getX();
-			int yE = 0;
-			int zE = (int) terrain.getZ();
+			int xE = (int) Math.floor(terrain.getX()/CHUNCK_SIZE);
+			int yE = (int) Math.floor(terrain.getHeight()/CHUNCK_SIZE);
+			int zE = (int) Math.floor(terrain.getZ()/CHUNCK_SIZE);
 
 			if (x - RENDER_DISTANCE <= xE && xE <= x + RENDER_DISTANCE && y - RENDER_DISTANCE <= yE && yE <= y + RENDER_DISTANCE && z - RENDER_DISTANCE <= zE
 					&& zE <= z + RENDER_DISTANCE) {
@@ -45,5 +45,18 @@ public class TerrainHandler {
 		for (Terrain terrain : terrains) {
 			// terrain.tick();//TODO
 		}
+	}
+
+	public float getHeightOfTerrain(float x, float z) {
+		for (Terrain terrain : this.terrains) {
+			int xT = (int) Math.floor(terrain.getX()/CHUNCK_SIZE);
+			int zT = (int) Math.floor(terrain.getZ()/CHUNCK_SIZE);
+			int xE = (int) Math.floor(x/CHUNCK_SIZE);
+			int zE = (int) Math.floor(z/CHUNCK_SIZE);
+			if(xT==xE && zT == zE){
+				return terrain.getHeightOfTerrain(x, z);
+			}
+		}
+		return 0;
 	}
 }

@@ -103,7 +103,7 @@ public class WaterShader extends ShaderProgram {
 		for (int i = 0; i < MAX_LIGHTS; i++) {
 			if (i < lights.size()) {
 				super.loadVector3f(location_lightPosition[i], lights.get(i).getPosition());
-				super.loadVector3f(location_lightColor[i], lights.get(i).getClolor());
+				super.loadVector3f(location_lightColor[i], lights.get(i).getColor());
 				super.loadVector3f(location_attenuation[i], lights.get(i).getAttenuation());
 			} else {
 				super.loadVector3f(location_lightPosition[i], new Vector3f(0, 0, 0));
