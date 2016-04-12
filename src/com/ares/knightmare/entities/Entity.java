@@ -12,7 +12,8 @@ public class Entity {
 
 	private TexturedModel model;
 	private Vector3f position, cameraPosition;
-	private float rotX, rotY, rotZ, scale, distance = 10, xSpeed, ySpeed, zSpeed, BRAKE = -0.03f, GRAVITY = -0.03f; //TODO use
+	private float rotX, rotY, rotZ, scale, distance = 10, xSpeed, ySpeed, zSpeed, BRAKE = -0.03f;//TODO use
+	public static final float GRAVITY = -0.03f; //TODO rework
 	private Camera camera;
 	private int textureIndex;
 

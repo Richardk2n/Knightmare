@@ -1,8 +1,6 @@
 package com.ares.knightmare.util;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
+import java.io.File;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -10,10 +8,15 @@ import com.ares.knightmare.entities.Entity;
 import com.ares.knightmare.entities.EntityFactory;
 import com.ares.knightmare.entities.Light;
 import com.ares.knightmare.entities.WaterTile;
+import com.ares.knightmare.fontMeshCreator.FontType;
+import com.ares.knightmare.fontMeshCreator.GUIText;
 import com.ares.knightmare.models.ModelTexture;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.models.TexturedModel;
 import com.ares.knightmare.normalMapping.NormalMappedObjLoader;
+import com.ares.knightmare.particles.Particle;
+import com.ares.knightmare.particles.ParticleSystem;
+import com.ares.knightmare.particles.ParticleTexture;
 import com.ares.knightmare.rendering.Loader;
 import com.ares.knightmare.rendering.MasterRenderer;
 import com.ares.knightmare.rendering.OBJLoader;
@@ -24,8 +27,10 @@ import com.ares.knightmare.terrain.TerrainTexturePack;
 public class Level {
 
 	private Entity q;
+	private MasterRenderer renderer;
 
 	public Level(MasterRenderer renderer, Loader loader, WaterFrameBuffers fbos) {
+		this.renderer = renderer;
 		Entity entity = EntityFactory.createEntity(loader, "lamp", "lamp", "textures", false, new Vector3f(0, 0, -25), new Vector3f(0, 0, 0), 1, 1, 0);
 
 		RawModel modelg = OBJLoader.loadObjModel("fern", loader);
@@ -67,7 +72,7 @@ public class Level {
 		GuiTexture gui = new GuiTexture(loader.loadTexture("health", "textures/gui"), new Vector2f(0.75f, 0.85f), new Vector2f(0.25f, 0.25f));
 		renderer.addGui(gui);
 
-		Light light = new Light(new Vector3f(0, 100, 0), new Vector3f(1, 1, 1));// TODO
+		Light light = new Light(new Vector3f(0, 1000000, 0), new Vector3f(1.2f, 1.2f, 1.2f));// TODO
 		// Light light1 = new Light(new Vector3f(150, 100, 100), new Vector3f(0,
 		// 0, 1));// TODO
 		// Light light2 = new Light(new Vector3f(150, 150, 100), new Vector3f(0,
@@ -90,18 +95,21 @@ public class Level {
 		barrelModel.getTexture().setReflectivity(0.5f);
 		
 		renderer.addNormalMappedEntity(new Entity(barrelModel, new Vector3f(0, 8, 40), 0, 0, 0, 0.25f));
-
-		new Timer(true).scheduleAtFixedRate(new TimerTask() {
-
-			@Override
-			public void run() {
-				q.tick(renderer.getTerrainHandler());
-				water.tick();
-			}
-		}, 0, 10);
+		
+		FontType font = new FontType(loader.loadTexture("candara", "textures/font"), new File("res/textures/font/candara.fnt"));
+		GUIText text = new GUIText("Hello, you fool! Have a nice day.", 3, font, new Vector2f(0.125f, 0.125f), 0.75f, true);
+		text.setColour(1, 0, 0);
+		
+		ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("particleAtlas", "textures/particles"), 4);
+//		renderer.addParticle(new Particle(new Vector3f(q.getPosition()), new Vector3f(0, 0.5f, 0), 0.25f, 1000, 0, 1, particleTexture));
+		renderer.addParticleSystem(new ParticleSystem(10, 0.25f, 0.01f, 1000, particleTexture));
 	}
 
 	public Entity geEntity() {
 		return q;
+	}
+	
+	public MasterRenderer getRenderer(){
+		return renderer;
 	}
 }

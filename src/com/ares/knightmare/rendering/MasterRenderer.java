@@ -15,12 +15,19 @@ import com.ares.knightmare.entities.Camera;
 import com.ares.knightmare.entities.Entity;
 import com.ares.knightmare.entities.Light;
 import com.ares.knightmare.entities.WaterTile;
+import com.ares.knightmare.handler.CameraHandler;
 import com.ares.knightmare.handler.EntityHandler;
 import com.ares.knightmare.handler.LightHandler;
 import com.ares.knightmare.handler.NormalMappedEntityHandler;
+import com.ares.knightmare.handler.ParticleHandler;
 import com.ares.knightmare.handler.TerrainHandler;
+import com.ares.knightmare.handler.TimeHandler;
 import com.ares.knightmare.handler.WaterHandler;
 import com.ares.knightmare.normalMapping.NormalMappingRenderer;
+import com.ares.knightmare.particles.Particle;
+import com.ares.knightmare.particles.ParticleRenderer;
+import com.ares.knightmare.particles.ParticleShader;
+import com.ares.knightmare.particles.ParticleSystem;
 import com.ares.knightmare.shaders.GuiShader;
 import com.ares.knightmare.shaders.SkyboxShader;
 import com.ares.knightmare.shaders.EntityShader;
@@ -45,14 +52,19 @@ public class MasterRenderer {
 	private SkyboxRenderer skyboxRenderer;
 	private WaterShader waterShader = new WaterShader();
 	private WaterRenderer waterRenderer;
+	private ParticleShader particleShader = new ParticleShader();
+	private ParticleRenderer particleRenderer;
 	
 	private NormalMappingRenderer normalMappingRenderer;
+	
+	private TimeHandler timeHandler;
 	
 	private EntityHandler entityHandler = new EntityHandler();
 	private NormalMappedEntityHandler normalMappedEntityHandler = new NormalMappedEntityHandler();
 	private LightHandler lightHandler = new LightHandler();
 	private TerrainHandler terrainHandler = new TerrainHandler();
 	private WaterHandler waterHandler = new WaterHandler();
+	private ParticleHandler particleHandler = new ParticleHandler(1);
 
 	private Matrix4f projectionMatrix;
 
@@ -60,7 +72,7 @@ public class MasterRenderer {
 
 	private List<GuiTexture> guis = new ArrayList<>();
 
-	public MasterRenderer(int width, int height, Loader loader, WaterFrameBuffers fbos) {
+	public MasterRenderer(int width, int height, Loader loader, WaterFrameBuffers fbos, CameraHandler cameraHandler) {
 		this.width = width;
 		this.height = height;
 		enableCulling();
@@ -71,6 +83,9 @@ public class MasterRenderer {
 		skyboxRenderer = new SkyboxRenderer(skyboxShader, projectionMatrix, loader);
 		waterRenderer = new WaterRenderer(waterShader, projectionMatrix, loader, fbos, lightHandler);
 		normalMappingRenderer = new NormalMappingRenderer(projectionMatrix, lightHandler);
+		particleRenderer = new ParticleRenderer(loader, projectionMatrix);
+		
+		timeHandler = new TimeHandler(entityHandler, normalMappedEntityHandler, lightHandler, terrainHandler, waterHandler, particleHandler, cameraHandler);
 	}
 
 	public static void enableCulling() {
@@ -121,6 +136,16 @@ public class MasterRenderer {
 		waterShader.loadSkyColor(SKY_R, SKY_G, SKY_B);
 		waterRenderer.render(waterHandler.getRenderedWaters(camera), camera);
 		waterShader.stop();
+		
+		//particles
+		try {
+			particleHandler.acquire();//Maybe try as not this important
+		} catch (InterruptedException e) {
+			//TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		particleRenderer.render(particleHandler.getRenderedParticles(camera), camera);
+		particleHandler.release();
 		
 		//gui
 		guiShader.start();
@@ -184,6 +209,22 @@ public class MasterRenderer {
 		waterHandler.remove(water);
 	}
 
+	public void addParticle(Particle particle) {
+		particleHandler.store(particle);
+	}
+	
+	public void removeParticle(Particle particle) {
+		particleHandler.remove(particle);
+	}
+	
+	public void addParticleSystem(ParticleSystem particleSystem) {
+		particleHandler.store(particleSystem);
+	}
+	
+	public void removeParticleSystem(ParticleSystem particleSystem) {
+		particleHandler.remove(particleSystem);
+	}
+
 	public void cleanUp() {
 		entityShader.cleanUp();
 		terrainShader.cleanUp();
@@ -191,6 +232,7 @@ public class MasterRenderer {
 		skyboxShader.cleanUp();
 		waterShader.cleanUp();
 		normalMappingRenderer.cleanUp();
+		particleShader.cleanUp();
 	}
 
 	private void createProjectionMatrix() {

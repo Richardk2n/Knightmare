@@ -79,10 +79,10 @@ public class EntityHandler {
 		return map;
 	}
 
-	public void tick() {
+	public void tick(TerrainHandler terrainHandler) {
 		for (List<Entity> list : entitiesModel.values()) {
 			for (Entity entity : list) {
-				// entity.tick();//TODO
+				entity.tick(terrainHandler);
 			}
 		}
 	}

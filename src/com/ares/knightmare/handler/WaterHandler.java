@@ -43,7 +43,7 @@ public class WaterHandler {
 
 	public void tick() {
 		for (WaterTile water : waters) {
-			// water.tick();//TODO
+			water.tick();
 		}
 	}
 }

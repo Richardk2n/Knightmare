@@ -6,8 +6,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.util.vector.Vector3f;
 
 import com.ares.knightmare.handler.CameraHandler;
+import com.ares.knightmare.particles.Particle;
+import com.ares.knightmare.particles.ParticleTexture;
 import com.ares.knightmare.util.Level;
 
 public class KeyListener extends GLFWKeyCallback {
@@ -121,6 +124,12 @@ public class KeyListener extends GLFWKeyCallback {
 				}, 0, period);
 			} else if (action == GLFW_RELEASE) {
 				timerSh.cancel();
+			}
+		}
+		if (key == GLFW_KEY_P) {
+			if (action == GLFW_PRESS) {
+//				ParticleTexture particleTexture = new ParticleTexture(loader, numberOfRows)TODO
+//				level.getRenderer().addParticle(new Particle(new Vector3f(level.geEntity().getPosition()), new Vector3f(0, 0.5f, 0), 0.25f, 100, 0, 1));
 			}
 		}
 	}

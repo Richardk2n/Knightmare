@@ -35,6 +35,7 @@ import org.lwjgl.util.vector.Vector4f;
 
 import com.ares.knightmare.entities.Camera;
 import com.ares.knightmare.entities.Overseher;
+import com.ares.knightmare.fontRendering.TextMaster;
 import com.ares.knightmare.handler.CameraHandler;
 import com.ares.knightmare.listener.KeyListener;
 import com.ares.knightmare.listener.MouseButtonListener;
@@ -66,11 +67,11 @@ public class LWJGLContext {
 		this.height = height;
 		try {
 			init();
-			
+
 			loop();
 
 			fbos.cleanUp();
-			
+
 			// Release window and window callbacks
 			glfwDestroyWindow(window);
 			keyCallback.release();
@@ -79,6 +80,7 @@ public class LWJGLContext {
 			mouseButtonCallback.release();
 		} finally {
 			// Terminate GLFW and release the GLFWErrorCallback
+			TextMaster.cleanUp();
 			renderer.cleanUp();
 			loader.cleanUp();
 			glfwTerminate();
@@ -132,7 +134,8 @@ public class LWJGLContext {
 		System.out.println("OpenGL version " + glGetString(GL_VERSION));
 
 		fbos = new WaterFrameBuffers(width, height);
-		renderer = new MasterRenderer(width, height, loader, fbos);
+		renderer = new MasterRenderer(width, height, loader, fbos, cameraHandler);
+		TextMaster.init(loader);
 		Level level = new Level(renderer, loader, fbos);
 
 		// Setup a key callback. It will be called every time a key is pressed,
@@ -140,7 +143,8 @@ public class LWJGLContext {
 		glfwSetKeyCallback(window, keyCallback = new KeyListener(cameraHandler, level));
 		GLFW.glfwSetCursorPosCallback(window, cursorPosCallback = new CursorPosListener(cameraHandler));
 		GLFW.glfwSetScrollCallback(window, scrollCallback = new ScrollListener(cameraHandler));
-		GLFW.glfwSetMouseButtonCallback(window, mouseButtonCallback = new MouseButtonListener(cameraHandler, new MousePicker(renderer.getProjectionMatrix(), width, height)));
+		GLFW.glfwSetMouseButtonCallback(window,
+				mouseButtonCallback = new MouseButtonListener(cameraHandler, new MousePicker(renderer.getProjectionMatrix(), width, height), level));
 	}
 
 	private void loop() {
@@ -148,29 +152,31 @@ public class LWJGLContext {
 		// the window or has pressed the ESCAPE key.
 		while (glfwWindowShouldClose(window) == GLFW_FALSE) {
 			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
-			
+
 			Camera camera = cameraHandler.getCamera();
 			Camera reflectionCam = camera.clone();
-			
-			//Reflection
+
+			// Reflection
 			fbos.bindReflectionFrameBuffer();
-			float distance = 2 * (camera.getPosition().y - 0);//TODO water hight = 0
+			float distance = 2 * (camera.getPosition().y - 0);// TODO water
+																// hight = 0
 			reflectionCam.getPosition().y -= distance;
 			reflectionCam.invertPitch();
 			renderer.prepare();
 			renderer.renderScene(reflectionCam, new Vector4f(0, 1, 0, 0.2f));
-			
-			//Refraction
+
+			// Refraction
 			fbos.bindRefractionFrameBuffer();
 			renderer.prepare();
 			renderer.renderScene(camera, new Vector4f(0, -1, 0, 0.5f));
-			
-			//Display
+
+			// Display
 			fbos.unbindCurrentFrameBuffer();
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 			renderer.prepare();
 			renderer.renderScene(camera, new Vector4f(0, -1, 0, 10000));
 			renderer.renderWaterGui(camera);
+			TextMaster.render();
 
 			glfwSwapBuffers(window); // swap the color buffers
 
