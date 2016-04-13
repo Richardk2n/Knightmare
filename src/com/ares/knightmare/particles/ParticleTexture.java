@@ -3,9 +3,9 @@ package com.ares.knightmare.particles;
 public class ParticleTexture {
 
 	private int textureId, numberOfRows;
+	private boolean additive = false;
 
 	public ParticleTexture(int textureId, int numberOfRows) {
-		super();
 		this.textureId = textureId;
 		this.numberOfRows = numberOfRows;
 	}
@@ -16,6 +16,14 @@ public class ParticleTexture {
 
 	public int getNumberOfRows() {
 		return numberOfRows;
+	}
+
+	public boolean isAdditive() {
+		return additive;
+	}
+
+	public void setAdditive(boolean additive) {
+		this.additive = additive;
 	}
 	
 	

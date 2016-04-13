@@ -53,6 +53,7 @@ public class Level {
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, bTexture, gTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap", "maps/blend"));
 		Terrain terrain = new Terrain(0, -1, 0, loader, texturePack, blendMap, "heightmapA");
+//		Terrain terrain = new Terrain(0, -1, 0, loader, texturePack, blendMap);
 		Terrain terrain2 = new Terrain(0, -2, 10, loader, texturePack, blendMap, "heightmapB");
 		Terrain terrain3 = new Terrain(-1, -1, 10, loader, texturePack, blendMap, "heightmapB");
 		Terrain terrain4 = new Terrain(-1, -2, 10, loader, texturePack, blendMap, "heightmapB");
@@ -102,7 +103,7 @@ public class Level {
 		
 		ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("particleAtlas", "textures/particles"), 4);
 //		renderer.addParticle(new Particle(new Vector3f(q.getPosition()), new Vector3f(0, 0.5f, 0), 0.25f, 1000, 0, 1, particleTexture));
-		renderer.addParticleSystem(new ParticleSystem(10, 0.25f, 0.01f, 1000, particleTexture));
+		renderer.addParticleSystem(new ParticleSystem(10, 0.25f, 0.017f, 1000, particleTexture));
 	}
 
 	public Entity geEntity() {

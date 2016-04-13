@@ -39,7 +39,7 @@ import com.ares.knightmare.util.WaterFrameBuffers;
 
 public class MasterRenderer {
 
-	private static final float FOV = 70, NEAR_PLANE = 0.1f, FAR_PLANE = 1000;
+	public static final float FOV = 70, NEAR_PLANE = 0.1f, FAR_PLANE = 1000;
 	public static final float SKY_R = 0.4f, SKY_G = 0.5f, SKY_B = 0.5f;
 
 	private EntityShader entityShader = new EntityShader();
@@ -68,13 +68,13 @@ public class MasterRenderer {
 
 	private Matrix4f projectionMatrix;
 
-	private int width, height;
+	public static int width, height;
 
 	private List<GuiTexture> guis = new ArrayList<>();
 
 	public MasterRenderer(int width, int height, Loader loader, WaterFrameBuffers fbos, CameraHandler cameraHandler) {
-		this.width = width;
-		this.height = height;
+		MasterRenderer.width = width;
+		MasterRenderer.height = height;
 		enableCulling();
 		createProjectionMatrix();
 		entityRenderer = new EntityRenderer(entityShader, projectionMatrix, lightHandler);

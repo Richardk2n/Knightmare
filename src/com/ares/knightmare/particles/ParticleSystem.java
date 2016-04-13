@@ -37,8 +37,8 @@ public class ParticleSystem {
 	}
 
 	private void emitParticle(Vector3f center) {
-		float dirX = (float) Math.random() * 1f - 1f;//TODO 2f
-		float dirZ = (float) Math.random() * 1f - 1f;
+		float dirX = (float) Math.random() * 0.5f - 0.25f;//TODO 2f 1f
+		float dirZ = (float) Math.random() * 0.5f - 0.25f;
 		Vector3f velocity = new Vector3f(dirX, 1, dirZ);
 		velocity.normalise();
 		velocity.scale(speed);
