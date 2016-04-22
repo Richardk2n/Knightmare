@@ -5,7 +5,7 @@ import java.util.List;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.ares.knightmare.entities.Camera;
-import com.ares.knightmare.terrain.Terrain;
+import com.ares.knightmare.entities.Terrain;
 
 public class TerrainHandler {
 

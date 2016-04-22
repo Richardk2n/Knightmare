@@ -11,10 +11,10 @@ import org.lwjgl.util.vector.Matrix4f;
 
 import com.ares.knightmare.entities.Entity;
 import com.ares.knightmare.handler.LightHandler;
-import com.ares.knightmare.models.ModelTexture;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.models.TexturedModel;
 import com.ares.knightmare.shaders.EntityShader;
+import com.ares.knightmare.textures.ModelTexture;
 import com.ares.knightmare.util.Maths;
 
 public class EntityRenderer {

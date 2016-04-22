@@ -19,11 +19,11 @@ public class CameraHandler {
 		}
 	}
 	
-	public void rotate(float xz, float yz, float xy){
+	public void rotate(float rotX, float rotY, float rotZ){
 		if(entity==null){
-			overseher.rotate(xz, yz, xy);
+			overseher.rotate(rotX, rotY, rotZ);
 		}else{
-			entity.rotate(xz, yz, xy);
+			entity.rotate(rotX, rotY, rotZ);
 		}
 	}
 	

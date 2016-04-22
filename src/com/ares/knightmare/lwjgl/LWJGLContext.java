@@ -22,6 +22,7 @@ import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.system.MemoryUtil.NULL;
+
 import static org.lwjgl.opengl.GL11.*;
 
 import org.lwjgl.Version;
@@ -35,24 +36,21 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-import com.ares.knightmare.audio.AudioMaster;
 import com.ares.knightmare.entities.Camera;
 import com.ares.knightmare.entities.Overseher;
-import com.ares.knightmare.fontRendering.TextMaster;
+import com.ares.knightmare.handler.AudioMaster;
 import com.ares.knightmare.handler.CameraHandler;
+import com.ares.knightmare.handler.TextMaster;
 import com.ares.knightmare.listener.KeyListener;
 import com.ares.knightmare.listener.MouseButtonListener;
 import com.ares.knightmare.listener.MousePicker;
 import com.ares.knightmare.listener.ScrollListener;
-import com.ares.knightmare.postProcessing.Fbo;
+import com.ares.knightmare.loader.Loader;
 import com.ares.knightmare.postProcessing.PostProcessing;
 import com.ares.knightmare.listener.CursorPosListener;
-import com.ares.knightmare.rendering.Loader;
 import com.ares.knightmare.rendering.MasterRenderer;
+import com.ares.knightmare.util.FrameBufferObject;
 import com.ares.knightmare.util.Level;
-import com.ares.knightmare.util.WaterFrameBuffers;
-
-import javafx.scene.image.PixelFormat;
 
 public class LWJGLContext {
 
@@ -67,8 +65,8 @@ public class LWJGLContext {
 	private Overseher overseher;
 	private MasterRenderer renderer;
 	private Loader loader = new Loader();
-	private WaterFrameBuffers fbos;
-	private Fbo fbo;
+//	private WaterFrameBuffers fbos;
+	private FrameBufferObject postProcessingFbo, reflectionFrameBuffer, refractionFrameBuffer;
 
 	public LWJGLContext(int width, int height) {
 		this.width = width;
@@ -77,8 +75,6 @@ public class LWJGLContext {
 			init();
 
 			loop();
-
-			fbos.cleanUp();
 
 			// Release window and window callbacks
 			glfwDestroyWindow(window);
@@ -92,7 +88,9 @@ public class LWJGLContext {
 			// Terminate GLFW and release the GLFWErrorCallback
 			AudioMaster.cleanUp();
 			PostProcessing.cleanUp();
-			fbo.cleanUp();
+			postProcessingFbo.cleanUp();
+			reflectionFrameBuffer.cleanUp();
+			refractionFrameBuffer.cleanUp();
 			TextMaster.cleanUp();
 			renderer.cleanUp();
 			loader.cleanUp();
@@ -149,12 +147,14 @@ public class LWJGLContext {
 		System.out.println("LWJGL version " + Version.getVersion());
 		System.out.println("OpenGL version " + glGetString(GL_VERSION));
 
-		fbos = new WaterFrameBuffers(width, height);
-		fbo = new Fbo(width, height, Fbo.DEPTH_RENDER_BUFFER);
+//		fbos = new WaterFrameBuffers(width, height);
+		reflectionFrameBuffer = new FrameBufferObject(320, 180, FrameBufferObject.COLOR_TEXTURE);//TODO
+		refractionFrameBuffer = new FrameBufferObject(width, height, FrameBufferObject.BOTH);
+		postProcessingFbo = new FrameBufferObject(width, height, FrameBufferObject.BOTH);
 		PostProcessing.init(loader);
-		renderer = new MasterRenderer(width, height, loader, fbos, cameraHandler);
+		renderer = new MasterRenderer(width, height, loader, /*fbos*/reflectionFrameBuffer, refractionFrameBuffer, cameraHandler);
 		TextMaster.init(loader);
-		Level level = new Level(renderer, loader, fbos);
+		Level level = new Level(renderer, loader);
 
 		// Setup a key callback. It will be called every time a key is pressed,
 		// repeated or released.
@@ -173,37 +173,42 @@ public class LWJGLContext {
 
 			Camera camera = cameraHandler.getCamera();
 			Vector3f camP = camera.getPosition();
-			AudioMaster.setListenerData(camP.x, camP.y, camP.z);//TODO try to move
+			System.out.println(camera.getRotY());
+			AudioMaster.setListenerData(camP.x, camP.y, camP.z, camera.getRotX(), camera.getRotY(), camera.getRotZ());// TODO try to move
 			Camera reflectionCam = camera.clone();
 
 			// Shadow Map
 			renderer.renderShadowMap(camera);
 
 			// Reflection
-			fbos.bindReflectionFrameBuffer();
+//			fbos.bindReflectionFrameBuffer();
+			reflectionFrameBuffer.bindFrameBuffer();
 			float distance = 2 * (camera.getPosition().y - 0);// TODO water
 																// hight = 0
 			reflectionCam.getPosition().y -= distance;
-			reflectionCam.invertPitch();
+			reflectionCam.invertRotX();
 			renderer.prepare();
 			renderer.renderScene(reflectionCam, new Vector4f(0, 1, 0, 0.2f));
+			reflectionFrameBuffer.unbindFrameBuffer();
 
 			// Refraction
-			fbos.bindRefractionFrameBuffer();
+//			fbos.bindRefractionFrameBuffer();
+			refractionFrameBuffer.bindFrameBuffer();
 			renderer.prepare();
 			renderer.renderScene(camera, new Vector4f(0, -1, 0, 0.5f));
 
 			// Post processing fbo
-			fbos.unbindCurrentFrameBuffer();
-			fbo.bindFrameBuffer();
+//			fbos.unbindCurrentFrameBuffer();
+			reflectionFrameBuffer.unbindFrameBuffer(); //TODO Could be any
+			postProcessingFbo.bindFrameBuffer();
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 			renderer.prepare();
-			renderer.renderScene(camera, new Vector4f(0, -1, 0, 10000));
+			renderer.renderScene(camera, new Vector4f());
 			renderer.renderWaterAndParticles(camera);
-			fbo.unbindFrameBuffer();
-			PostProcessing.doPostProcessing(fbo.getColourTexture());
-			
-			//Display
+			postProcessingFbo.unbindFrameBuffer();
+			PostProcessing.doPostProcessing(postProcessingFbo.getColorTexture());
+
+			// Display
 			renderer.renderGui();
 			TextMaster.render();
 

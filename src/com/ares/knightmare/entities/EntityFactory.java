@@ -2,10 +2,10 @@ package com.ares.knightmare.entities;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import com.ares.knightmare.models.ModelTexture;
+import com.ares.knightmare.loader.Loader;
+import com.ares.knightmare.loader.OBJLoader;
 import com.ares.knightmare.models.TexturedModel;
-import com.ares.knightmare.rendering.Loader;
-import com.ares.knightmare.rendering.OBJLoader;
+import com.ares.knightmare.textures.ModelTexture;
 
 public class EntityFactory {
 

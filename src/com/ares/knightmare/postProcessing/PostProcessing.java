@@ -4,8 +4,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import com.ares.knightmare.loader.Loader;
 import com.ares.knightmare.models.RawModel;
-import com.ares.knightmare.rendering.Loader;
 
 public class PostProcessing {
 	

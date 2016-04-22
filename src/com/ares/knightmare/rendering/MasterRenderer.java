@@ -15,6 +15,9 @@ import org.lwjgl.util.vector.Vector4f;
 import com.ares.knightmare.entities.Camera;
 import com.ares.knightmare.entities.Entity;
 import com.ares.knightmare.entities.Light;
+import com.ares.knightmare.entities.Particle;
+import com.ares.knightmare.entities.ParticleSystem;
+import com.ares.knightmare.entities.Terrain;
 import com.ares.knightmare.entities.WaterTile;
 import com.ares.knightmare.handler.CameraHandler;
 import com.ares.knightmare.handler.EntityHandler;
@@ -24,20 +27,16 @@ import com.ares.knightmare.handler.ParticleHandler;
 import com.ares.knightmare.handler.TerrainHandler;
 import com.ares.knightmare.handler.TimeHandler;
 import com.ares.knightmare.handler.WaterHandler;
-import com.ares.knightmare.normalMapping.NormalMappingRenderer;
-import com.ares.knightmare.particles.Particle;
-import com.ares.knightmare.particles.ParticleRenderer;
-import com.ares.knightmare.particles.ParticleShader;
-import com.ares.knightmare.particles.ParticleSystem;
+import com.ares.knightmare.loader.Loader;
 import com.ares.knightmare.shaders.GuiShader;
+import com.ares.knightmare.shaders.ParticleShader;
 import com.ares.knightmare.shaders.SkyboxShader;
 import com.ares.knightmare.shaders.EntityShader;
 import com.ares.knightmare.shaders.TerrainShader;
 import com.ares.knightmare.shaders.WaterShader;
 import com.ares.knightmare.shadows.ShadowMapMasterRenderer;
-import com.ares.knightmare.terrain.Terrain;
-import com.ares.knightmare.util.GuiTexture;
-import com.ares.knightmare.util.WaterFrameBuffers;
+import com.ares.knightmare.textures.GuiTexture;
+import com.ares.knightmare.util.FrameBufferObject;
 
 public class MasterRenderer {
 
@@ -76,7 +75,7 @@ public class MasterRenderer {
 
 	private List<GuiTexture> guis = new ArrayList<>();
 
-	public MasterRenderer(int width, int height, Loader loader, WaterFrameBuffers fbos, CameraHandler cameraHandler) {
+	public MasterRenderer(int width, int height, Loader loader, /*WaterFrameBuffers fbos*/FrameBufferObject reflectionFrameBuffer, FrameBufferObject refractionFrameBuffer, CameraHandler cameraHandler) {
 		MasterRenderer.width = width;
 		MasterRenderer.height = height;
 		enableCulling();
@@ -85,7 +84,7 @@ public class MasterRenderer {
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix, lightHandler);
 		guiRenderer = new GuiRenderer(guiShader, loader);
 		skyboxRenderer = new SkyboxRenderer(skyboxShader, projectionMatrix, loader);
-		waterRenderer = new WaterRenderer(waterShader, projectionMatrix, loader, fbos, lightHandler);
+		waterRenderer = new WaterRenderer(waterShader, projectionMatrix, loader, /*fbos*/reflectionFrameBuffer, refractionFrameBuffer, lightHandler);
 		particleRenderer = new ParticleRenderer(loader, projectionMatrix);
 
 		normalMappingRenderer = new NormalMappingRenderer(projectionMatrix, lightHandler);
@@ -129,6 +128,7 @@ public class MasterRenderer {
 		terrainShader.loadClipPlane(plane);
 		terrainShader.loadSkyColor(SKY_R, SKY_G, SKY_B);
 		terrainShader.loadViewMatrix(camera);
+		terrainShader.loadShadowVariables(150, 10, 1);//TODO graphic settings
 		terrainRenderer.render(terrainHandler.getRenderedTerrains(camera), shadowMapMasterRenderer.getToShadowMapSpaceMatrix());
 		terrainShader.stop();
 		

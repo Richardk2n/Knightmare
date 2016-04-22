@@ -8,9 +8,10 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
+import com.ares.knightmare.loader.Loader;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.shaders.GuiShader;
-import com.ares.knightmare.util.GuiTexture;
+import com.ares.knightmare.textures.GuiTexture;
 import com.ares.knightmare.util.Maths;
 
 public class GuiRenderer {

@@ -13,6 +13,7 @@ import com.ares.knightmare.entities.Entity;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.models.TexturedModel;
 import com.ares.knightmare.rendering.MasterRenderer;
+import com.ares.knightmare.shaders.ShadowShader;
 import com.ares.knightmare.util.Maths;
 
 public class ShadowMapEntityRenderer {

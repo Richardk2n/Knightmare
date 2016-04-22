@@ -4,8 +4,8 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.util.vector.Vector3f;
 
+import com.ares.knightmare.entities.Particle;
 import com.ares.knightmare.handler.CameraHandler;
-import com.ares.knightmare.particles.Particle;
 import com.ares.knightmare.util.Level;
 
 public class MouseButtonListener extends GLFWMouseButtonCallback {

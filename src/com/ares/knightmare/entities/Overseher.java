@@ -4,11 +4,11 @@ public class Overseher extends Camera{
 
 	public Overseher(int width, int height) {
 		super(width, height);
-		yz = 90;
+		rotX = 90;
 	}
 	
-	public void rotate(float xz, float yz, float xy) {
-		move(xz, 0, yz);//TODO xy
+	public void rotate(float rotX, float rotY, float rotZ) {
+		move(rotY, 0, rotX);//TODO xy
 	}
 	
 	public void move(float ad, float ss, float ws) {

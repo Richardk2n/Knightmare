@@ -71,15 +71,26 @@ public class Entity {
 		camera.set(cameraPosition.x + args[3], cameraPosition.y + args[4], cameraPosition.z + args[5], args[0], args[1], args[2]);
 	}
 
-	public void rotate(float rotY, float yz, float xy) {
+	public void rotate(float rotX, float rotY, float rotZ) {
 		this.rotY += rotY;
-		this.rotX -= yz;
+		this.rotX -= rotX;
 		if (this.rotX > 90) {
 			this.rotX = 90;
 		} else if (this.rotX < -90) {
 			this.rotX = -90;
 		}
-		rotZ += xy;
+		this.rotZ += rotZ;
+		
+		this.rotX %= 360;
+		this.rotY %= 360;
+		if(this.rotY>180){
+			this.rotY -=360;//TODO
+		}
+		if(this.rotY<-180){
+			this.rotY += 360;
+		}
+		this.rotZ %= 360;
+		
 		float[] args = calculateCam(distance);
 		camera.set(cameraPosition.x + args[3], cameraPosition.y + args[4], cameraPosition.z + args[5], args[0], args[1], args[2]);
 	}

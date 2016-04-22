@@ -8,11 +8,11 @@ import java.util.TimerTask;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.ares.knightmare.audio.AudioMaster;
-import com.ares.knightmare.audio.Source;
+import com.ares.knightmare.entities.Particle;
+import com.ares.knightmare.entities.Source;
+import com.ares.knightmare.handler.AudioMaster;
 import com.ares.knightmare.handler.CameraHandler;
-import com.ares.knightmare.particles.Particle;
-import com.ares.knightmare.particles.ParticleTexture;
+import com.ares.knightmare.textures.ParticleTexture;
 import com.ares.knightmare.util.Level;
 
 public class KeyListener extends GLFWKeyCallback {

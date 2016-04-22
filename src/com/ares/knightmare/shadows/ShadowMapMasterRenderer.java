@@ -12,6 +12,8 @@ import com.ares.knightmare.entities.Camera;
 import com.ares.knightmare.entities.Entity;
 import com.ares.knightmare.entities.Light;
 import com.ares.knightmare.models.TexturedModel;
+import com.ares.knightmare.shaders.ShadowShader;
+import com.ares.knightmare.util.FrameBufferObject;
 
 /**
  * This class is in charge of using all of the classes in the shadows package to
@@ -24,9 +26,9 @@ import com.ares.knightmare.models.TexturedModel;
  */
 public class ShadowMapMasterRenderer {
 
-	private static final int SHADOW_MAP_SIZE = 16384;//TODO could be higher
+	private static final int SHADOW_MAP_SIZE = 16384;//TODO could be higher but can't
 
-	private ShadowFrameBuffer shadowFbo;
+	private FrameBufferObject shadowFbo;
 	private ShadowShader shader;
 	private ShadowBox shadowBox;
 	private Matrix4f projectionMatrix = new Matrix4f();
@@ -50,7 +52,7 @@ public class ShadowMapMasterRenderer {
 	public ShadowMapMasterRenderer() {
 		shader = new ShadowShader();
 		shadowBox = new ShadowBox(lightViewMatrix);
-		shadowFbo = new ShadowFrameBuffer(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+		shadowFbo = new FrameBufferObject(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, FrameBufferObject.DEPTH_TEXTURE);
 		entityRenderer = new ShadowMapEntityRenderer(shader, projectionViewMatrix);
 	}
 
@@ -115,7 +117,7 @@ public class ShadowMapMasterRenderer {
 	 *         each frame.
 	 */
 	public int getShadowMap() {
-		return shadowFbo.getShadowMap();
+		return shadowFbo.getDepthTexture();
 	}
 
 	/**

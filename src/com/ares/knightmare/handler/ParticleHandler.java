@@ -11,11 +11,11 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.ares.knightmare.entities.Camera;
 import com.ares.knightmare.entities.Entity;
+import com.ares.knightmare.entities.Particle;
+import com.ares.knightmare.entities.ParticleSystem;
 import com.ares.knightmare.models.TexturedModel;
-import com.ares.knightmare.particles.InsertionSort;
-import com.ares.knightmare.particles.Particle;
-import com.ares.knightmare.particles.ParticleSystem;
-import com.ares.knightmare.particles.ParticleTexture;
+import com.ares.knightmare.textures.ParticleTexture;
+import com.ares.knightmare.util.InsertionSort;
 
 public class ParticleHandler extends Semaphore{
 

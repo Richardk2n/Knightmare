@@ -1,39 +1,38 @@
 package com.ares.knightmare.util;
 
-import java.io.File;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.ares.knightmare.audio.AudioMaster;
-import com.ares.knightmare.audio.Source;
 import com.ares.knightmare.entities.Entity;
 import com.ares.knightmare.entities.EntityFactory;
 import com.ares.knightmare.entities.Light;
+import com.ares.knightmare.entities.ParticleSystem;
+import com.ares.knightmare.entities.Source;
+import com.ares.knightmare.entities.Terrain;
 import com.ares.knightmare.entities.WaterTile;
-import com.ares.knightmare.fontMeshCreator.FontType;
-import com.ares.knightmare.fontMeshCreator.GUIText;
-import com.ares.knightmare.models.ModelTexture;
+import com.ares.knightmare.handler.AudioMaster;
+import com.ares.knightmare.loader.Loader;
+import com.ares.knightmare.loader.NormalMappedObjLoader;
+import com.ares.knightmare.loader.OBJLoader;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.models.TexturedModel;
-import com.ares.knightmare.normalMapping.NormalMappedObjLoader;
-import com.ares.knightmare.particles.Particle;
-import com.ares.knightmare.particles.ParticleSystem;
-import com.ares.knightmare.particles.ParticleTexture;
-import com.ares.knightmare.rendering.Loader;
 import com.ares.knightmare.rendering.MasterRenderer;
-import com.ares.knightmare.rendering.OBJLoader;
-import com.ares.knightmare.terrain.Terrain;
-import com.ares.knightmare.terrain.TerrainTexture;
-import com.ares.knightmare.terrain.TerrainTexturePack;
+import com.ares.knightmare.textures.GuiTexture;
+import com.ares.knightmare.textures.ModelTexture;
+import com.ares.knightmare.textures.ParticleTexture;
+import com.ares.knightmare.textures.TerrainTexture;
+import com.ares.knightmare.textures.TerrainTexturePack;
+import com.ares.knightmare.util.fontMeshCreator.FontType;
+import com.ares.knightmare.util.fontMeshCreator.GUIText;
 
 public class Level {
 
 	private Entity q;
 	private MasterRenderer renderer;
 
-	public Level(MasterRenderer renderer, Loader loader, WaterFrameBuffers fbos) {
+	public Level(MasterRenderer renderer, Loader loader) {
 		this.renderer = renderer;
-		Entity entity = EntityFactory.createEntity(loader, "lamp", "lamp", "textures", false, new Vector3f(0, 0, -25), new Vector3f(0, 0, 0), 1, 1, 0);
+		Entity entity = EntityFactory.createEntity(loader, "lamp", "lamp", "textures", false, new Vector3f(35, 0, -35), new Vector3f(0, 0, 0), 1, 1, 0);
 
 		RawModel modelg = OBJLoader.loadObjModel("fern", loader);
 		TexturedModel texturedModelg = new TexturedModel(modelg, new ModelTexture(loader.loadTexture("fern", "textures")));
@@ -42,7 +41,7 @@ public class Level {
 		textureg.setShineDamper(0);
 		textureg.setReflectivity(0);
 		textureg.setHasTransparency(true);
-		Entity gras = new Entity(texturedModelg, new Vector3f(50, 10, -50), 0, 0, 0, 1, 3);
+		Entity gras = new Entity(texturedModelg, new Vector3f(25, 0, -25), 0, 0, 0, 1, 3);
 
 		q = EntityFactory.createEntity(loader, "tree", "tree", "textures", true, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 2, 0, 0);
 		
@@ -86,8 +85,8 @@ public class Level {
 		// 0, 1));// TODO
 		// Light light2 = new Light(new Vector3f(150, 150, 100), new Vector3f(0,
 		// 1, 0));// TODO Light list and get 4 nearest for lighting
-		Light light3 = new Light(new Vector3f(0, 0, -25), new Vector3f(2, 0, 0), new Vector3f(0.01f, 0.01f, 0.001f));// TODO
-		Light light4 = new Light(new Vector3f(0, entity.getModel().getRawModel().getHeight() * 2, -25), new Vector3f(2, 0, 0), new Vector3f(0.01f, 0.01f, 0.001f));// TODO
+		Light light3 = new Light(new Vector3f(35, 0, -35), new Vector3f(2, 0, 0), new Vector3f(0.01f, 0.01f, 0.001f));// TODO
+		Light light4 = new Light(new Vector3f(35, entity.getModel().getRawModel().getHeight() * 2 - 10, -35), new Vector3f(2, 0, 0), new Vector3f(0.01f, 0.01f, 0.001f));// TODO
 		// renderer.addLight(light);
 		// renderer.addLight(light1);
 //		 renderer.addLight(light2);
@@ -116,7 +115,7 @@ public class Level {
 		
 		//TODO delete audio test code
 		AudioMaster.init();
-		AudioMaster.setListenerData(10, 10, 10);
+		AudioMaster.setListenerData(10, 10, 10, 0, 0, 0);
 
 		int buffer = AudioMaster.loadSound("sounds/music/Knightmare_Soundtrack_17.wav");
 		Source source = AudioMaster.generateSource(1);

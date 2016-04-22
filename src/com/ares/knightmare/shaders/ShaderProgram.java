@@ -1,7 +1,6 @@
 package com.ares.knightmare.shaders;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -103,7 +102,7 @@ public abstract class ShaderProgram {
 			}
 			reader.close();
 		}catch (IOException e){
-			System.err.println("Could not read file!");
+			System.err.println("Could not read file!");//TODO error handling
 			e.printStackTrace();
 			System.exit(-1);
 		}

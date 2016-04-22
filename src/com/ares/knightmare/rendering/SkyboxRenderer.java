@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
 import com.ares.knightmare.entities.Camera;
+import com.ares.knightmare.loader.Loader;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.shaders.SkyboxShader;
 

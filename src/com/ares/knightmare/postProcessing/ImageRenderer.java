@@ -2,12 +2,14 @@ package com.ares.knightmare.postProcessing;
 
 import org.lwjgl.opengl.GL11;
 
+import com.ares.knightmare.util.FrameBufferObject;
+
 public class ImageRenderer {
 
-	private Fbo fbo;
+	private FrameBufferObject fbo;
 
 	protected ImageRenderer(int width, int height) {
-		this.fbo = new Fbo(width, height, Fbo.NONE);
+		fbo = new FrameBufferObject(width, height, FrameBufferObject.NONE);
 	}
 
 	protected ImageRenderer() {}
@@ -24,7 +26,7 @@ public class ImageRenderer {
 	}
 
 	protected int getOutputTexture() {
-		return fbo.getColourTexture();
+		return fbo.getColorTexture();
 	}
 
 	protected void cleanUp() {

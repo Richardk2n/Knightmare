@@ -14,11 +14,12 @@ public class TerrainShader extends ShaderProgram {
 
 	private static final int MAX_LIGHTS = 4;
 
-	private static final String VERTEX_FILE = "/shaders/vertexShaderTerrain", FRAGMENT_FILE = "/shaders/fragmentShaderTerrain";
+	private static final String VERTEX_FILE = "/shaders/TerrainVertexShader", FRAGMENT_FILE = "/shaders/TerrainFragmentShader";
 
 	private int location_transformationMatrix, location_viewMatrix, location_projectionMatrix, location_lightPosition[], location_lightColor[], location_shineDamper,
 			location_reflectivity, location_skyColor, location_backgroundTexture, location_rTexture, location_gTexture, location_bTexture, location_blendMap,
-			location_attenuation[], location_plane, location_toShadowMapSpace, location_shadowMap;
+			location_attenuation[], location_plane, location_toShadowMapSpace, location_shadowMap, location_shadowDistance, location_transitionDistance,
+			location_pfcCount;
 
 	public TerrainShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -47,6 +48,9 @@ public class TerrainShader extends ShaderProgram {
 		location_plane = super.getUniformLocation("plane");
 		location_toShadowMapSpace = super.getUniformLocation("toShadowMapSpace");
 		location_shadowMap = super.getUniformLocation("shadowMap");
+		location_shadowDistance = super.getUniformLocation("shadowDistance");
+		location_transitionDistance = super.getUniformLocation("transitionDistance");
+		location_pfcCount = super.getUniformLocation("pfcCount");
 
 		location_lightPosition = new int[MAX_LIGHTS];
 		location_lightColor = new int[MAX_LIGHTS];
@@ -102,12 +106,18 @@ public class TerrainShader extends ShaderProgram {
 		super.loadInt(location_blendMap, 4);
 		super.loadInt(location_shadowMap, 5);
 	}
-	
-	public void loadClipPlane(Vector4f plane){
+
+	public void loadClipPlane(Vector4f plane) {
 		super.loadVector4f(location_plane, plane);
 	}
-	
-	public void loadToShadowMapSpaceMatrix(Matrix4f toShadowMapSpaceMatrix){
+
+	public void loadToShadowMapSpaceMatrix(Matrix4f toShadowMapSpaceMatrix) {
 		super.loadMatrix(location_toShadowMapSpace, toShadowMapSpaceMatrix);
+	}
+
+	public void loadShadowVariables(float shadowDistance, float transitionDistance, int pfcCount) {
+		super.loadFloat(location_shadowDistance, shadowDistance);
+		super.loadFloat(location_transitionDistance, transitionDistance);
+		super.loadInt(location_pfcCount, pfcCount);
 	}
 }

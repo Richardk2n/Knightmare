@@ -6,7 +6,7 @@ import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 import com.ares.knightmare.entities.Camera;
-import com.ares.knightmare.terrain.Terrain;
+import com.ares.knightmare.entities.Terrain;
 import com.ares.knightmare.util.Maths;
 
 public class MousePicker {

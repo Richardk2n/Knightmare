@@ -32,7 +32,7 @@ public class CursorPosListener extends GLFWCursorPosCallback {
 
 				@Override
 				public void run() {
-					cameraHandler.rotate(-amount, 0, 0);
+					cameraHandler.rotate(0, -amount, 0);
 				}
 			}, 0, period);
 		}
@@ -41,7 +41,7 @@ public class CursorPosListener extends GLFWCursorPosCallback {
 
 				@Override
 				public void run() {
-					cameraHandler.rotate(0, amount, 0);
+					cameraHandler.rotate(amount, 0, 0);
 				}
 			}, 0, period);
 		}
@@ -50,7 +50,7 @@ public class CursorPosListener extends GLFWCursorPosCallback {
 
 				@Override
 				public void run() {
-					cameraHandler.rotate(amount, 0, 0);
+					cameraHandler.rotate(0, amount, 0);
 				}
 			}, 0, period);
 		}
@@ -59,7 +59,7 @@ public class CursorPosListener extends GLFWCursorPosCallback {
 
 				@Override
 				public void run() {
-					cameraHandler.rotate(0, -amount, 0);
+					cameraHandler.rotate(-amount, 0, 0);
 				}
 			}, 0, period);
 		}
