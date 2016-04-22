@@ -5,8 +5,8 @@ import com.ares.knightmare.shaders.ShaderProgram;
 
 public class ParticleShader extends ShaderProgram {
 
-	private static final String VERTEX_FILE = "src/com/ares/knightmare/particles/particleVShader.txt";
-	private static final String FRAGMENT_FILE = "src/com/ares/knightmare/particles/particleFShader.txt";
+	private static final String VERTEX_FILE = "/com/ares/knightmare/particles/particleVShader.txt";
+	private static final String FRAGMENT_FILE = "/com/ares/knightmare/particles/particleFShader.txt";
 
 	private int location_projectionMatrix, location_numberOfRows;
 

@@ -24,7 +24,7 @@ import com.ares.knightmare.models.TexturedModel;
  */
 public class ShadowMapMasterRenderer {
 
-	private static final int SHADOW_MAP_SIZE = 2048;
+	private static final int SHADOW_MAP_SIZE = 16384;//TODO could be higher
 
 	private ShadowFrameBuffer shadowFbo;
 	private ShadowShader shader;
@@ -47,9 +47,9 @@ public class ShadowMapMasterRenderer {
 	 * @param camera
 	 *            - the camera being used in the scene.
 	 */
-	public ShadowMapMasterRenderer(Camera camera) {
+	public ShadowMapMasterRenderer() {
 		shader = new ShadowShader();
-		shadowBox = new ShadowBox(lightViewMatrix, camera);
+		shadowBox = new ShadowBox(lightViewMatrix);
 		shadowFbo = new ShadowFrameBuffer(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
 		entityRenderer = new ShadowMapEntityRenderer(shader, projectionViewMatrix);
 	}
@@ -69,12 +69,23 @@ public class ShadowMapMasterRenderer {
 	 * @param sun
 	 *            - the light acting as the sun in the scene.
 	 */
-	public void render(Map<TexturedModel, List<Entity>> entities, Light sun) {
-		shadowBox.update();
+	public void render(Map<TexturedModel, List<Entity>> entities, Light sun, Camera cam) {
+		shadowBox.update(cam);//TODO to game cycle
 		Vector3f sunPosition = sun.getPosition();
 		Vector3f lightDirection = new Vector3f(-sunPosition.x, -sunPosition.y, -sunPosition.z);
 		prepare(lightDirection, shadowBox);
 		entityRenderer.render(entities);
+		finish();
+	}
+	
+
+	public void render(Map<TexturedModel, List<Entity>> entities, Map<TexturedModel, List<Entity>> entitiesN, Light sun, Camera cam) {
+		shadowBox.update(cam);//TODO to game cycle
+		Vector3f sunPosition = sun.getPosition();
+		Vector3f lightDirection = new Vector3f(-sunPosition.x, -sunPosition.y, -sunPosition.z);
+		prepare(lightDirection, shadowBox);
+		entityRenderer.render(entities);
+		entityRenderer.render(entitiesN);
 		finish();
 	}
 

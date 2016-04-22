@@ -13,8 +13,8 @@ public class WaterShader extends ShaderProgram {
 	
 	private static final int MAX_LIGHTS = 4;
  
-    private final static String VERTEX_FILE = "res/shaders/vertexShaderWater";
-    private final static String FRAGMENT_FILE = "res/shaders/fragmentShaderWater";
+    private final static String VERTEX_FILE = "/shaders/vertexShaderWater";
+    private final static String FRAGMENT_FILE = "/shaders/fragmentShaderWater";
  
     private int location_modelMatrix;
     private int location_viewMatrix;

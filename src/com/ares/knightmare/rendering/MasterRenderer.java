@@ -8,6 +8,7 @@ import static org.lwjgl.opengl.GL11.glClearColor;
 import java.util.ArrayList;
 import java.util.List;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector4f;
 
@@ -33,6 +34,7 @@ import com.ares.knightmare.shaders.SkyboxShader;
 import com.ares.knightmare.shaders.EntityShader;
 import com.ares.knightmare.shaders.TerrainShader;
 import com.ares.knightmare.shaders.WaterShader;
+import com.ares.knightmare.shadows.ShadowMapMasterRenderer;
 import com.ares.knightmare.terrain.Terrain;
 import com.ares.knightmare.util.GuiTexture;
 import com.ares.knightmare.util.WaterFrameBuffers;
@@ -56,6 +58,8 @@ public class MasterRenderer {
 	private ParticleRenderer particleRenderer;
 	
 	private NormalMappingRenderer normalMappingRenderer;
+	
+	private ShadowMapMasterRenderer shadowMapMasterRenderer;
 	
 	private TimeHandler timeHandler;
 	
@@ -82,8 +86,11 @@ public class MasterRenderer {
 		guiRenderer = new GuiRenderer(guiShader, loader);
 		skyboxRenderer = new SkyboxRenderer(skyboxShader, projectionMatrix, loader);
 		waterRenderer = new WaterRenderer(waterShader, projectionMatrix, loader, fbos, lightHandler);
-		normalMappingRenderer = new NormalMappingRenderer(projectionMatrix, lightHandler);
 		particleRenderer = new ParticleRenderer(loader, projectionMatrix);
+
+		normalMappingRenderer = new NormalMappingRenderer(projectionMatrix, lightHandler);
+		
+		shadowMapMasterRenderer = new ShadowMapMasterRenderer();
 		
 		timeHandler = new TimeHandler(entityHandler, normalMappedEntityHandler, lightHandler, terrainHandler, waterHandler, particleHandler, cameraHandler);
 	}
@@ -100,7 +107,9 @@ public class MasterRenderer {
 	public void prepare() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		glClearColor(SKY_R, SKY_G, SKY_B, 0.0f);
+		glClearColor(SKY_R, SKY_G, SKY_B, 1);
+		GL13.glActiveTexture(GL13.GL_TEXTURE5);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, getShadowMapTexture());
 	}
 
 	public void renderScene(Camera camera, Vector4f plane) {
@@ -120,7 +129,7 @@ public class MasterRenderer {
 		terrainShader.loadClipPlane(plane);
 		terrainShader.loadSkyColor(SKY_R, SKY_G, SKY_B);
 		terrainShader.loadViewMatrix(camera);
-		terrainRenderer.render(terrainHandler.getRenderedTerrains(camera));
+		terrainRenderer.render(terrainHandler.getRenderedTerrains(camera), shadowMapMasterRenderer.getToShadowMapSpaceMatrix());
 		terrainShader.stop();
 		
 		//skybox
@@ -129,7 +138,7 @@ public class MasterRenderer {
 		skyboxShader.stop();
 	}
 	
-	public void renderWaterGui(Camera camera){
+	public void renderWaterAndParticles(Camera camera){
 		//water
 		waterShader.start();
 		waterShader.loadPlanes(NEAR_PLANE, FAR_PLANE);
@@ -146,11 +155,16 @@ public class MasterRenderer {
 		}
 		particleRenderer.render(particleHandler.getRenderedParticles(camera), camera);
 		particleHandler.release();
-		
-		//gui
+	}
+	
+	public void renderGui(){
 		guiShader.start();
 		guiRenderer.render(guis);
 		guiShader.stop();
+	}
+	
+	public void renderShadowMap(Camera camera){
+		shadowMapMasterRenderer.render(entityHandler.getRenderedEntities(camera), normalMappedEntityHandler.getRenderedEntities(camera), lightHandler.getSun(), camera);
 	}
 	
 	public void addTerrain(Terrain terrain) {
@@ -231,17 +245,18 @@ public class MasterRenderer {
 		guiShader.cleanUp();
 		skyboxShader.cleanUp();
 		waterShader.cleanUp();
-		normalMappingRenderer.cleanUp();
 		particleShader.cleanUp();
+		normalMappingRenderer.cleanUp();
+		shadowMapMasterRenderer.cleanUp();
 	}
 
 	private void createProjectionMatrix() {
+    	projectionMatrix = new Matrix4f();
 		float aspectRatio = (float) width / (float) height;
-		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
+		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))));
 		float x_scale = y_scale / aspectRatio;
 		float frustum_length = FAR_PLANE - NEAR_PLANE;
 
-		projectionMatrix = new Matrix4f();
 		projectionMatrix.m00 = x_scale;
 		projectionMatrix.m11 = y_scale;
 		projectionMatrix.m22 = -((FAR_PLANE + NEAR_PLANE) / frustum_length);
@@ -256,5 +271,9 @@ public class MasterRenderer {
 	
 	public TerrainHandler getTerrainHandler(){
 		return terrainHandler;
+	}
+	
+	public int getShadowMapTexture(){
+		return shadowMapMasterRenderer.getShadowMap();
 	}
 }

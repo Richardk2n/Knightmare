@@ -11,7 +11,7 @@ import com.ares.knightmare.util.Maths;
 
 public class SkyboxShader extends ShaderProgram {
 
-	private static final String VERTEX_FILE = "res/shaders/vertexShaderSkybox", FRAGMENT_FILE = "res/shaders/fragmentShaderSkybox";
+	private static final String VERTEX_FILE = "/shaders/vertexShaderSkybox", FRAGMENT_FILE = "/shaders/fragmentShaderSkybox";
 	private static final float ROTATE_SPEED = 0.01f;
 	private static final int TIME_SPEED = 10;
 

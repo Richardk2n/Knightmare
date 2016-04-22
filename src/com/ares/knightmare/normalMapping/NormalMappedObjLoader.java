@@ -1,10 +1,8 @@
 package com.ares.knightmare.normalMapping;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,16 +14,10 @@ import com.ares.knightmare.rendering.Loader;
 
 public class NormalMappedObjLoader {
 
-	private static final String RES_LOC = "res/models/";
+	private static final String RES_LOC = "/models/";
 
 	public static RawModel loadOBJ(String objFileName, Loader loader) {
-		FileReader isr = null;
-		File objFile = new File(RES_LOC + objFileName + ".obj");
-		try {
-			isr = new FileReader(objFile);
-		} catch (FileNotFoundException e) {
-			System.err.println("File not found in res; don't use any extention");
-		}
+		InputStreamReader isr = new InputStreamReader(Class.class.getResourceAsStream(new StringBuilder(RES_LOC).append(objFileName).append(".obj").toString()));
 		BufferedReader reader = new BufferedReader(isr);
 		String line;
 		List<VertexNM> vertices = new ArrayList<VertexNM>();

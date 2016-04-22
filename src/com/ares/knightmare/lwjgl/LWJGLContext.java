@@ -30,9 +30,12 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import com.ares.knightmare.audio.AudioMaster;
 import com.ares.knightmare.entities.Camera;
 import com.ares.knightmare.entities.Overseher;
 import com.ares.knightmare.fontRendering.TextMaster;
@@ -41,11 +44,15 @@ import com.ares.knightmare.listener.KeyListener;
 import com.ares.knightmare.listener.MouseButtonListener;
 import com.ares.knightmare.listener.MousePicker;
 import com.ares.knightmare.listener.ScrollListener;
+import com.ares.knightmare.postProcessing.Fbo;
+import com.ares.knightmare.postProcessing.PostProcessing;
 import com.ares.knightmare.listener.CursorPosListener;
 import com.ares.knightmare.rendering.Loader;
 import com.ares.knightmare.rendering.MasterRenderer;
 import com.ares.knightmare.util.Level;
 import com.ares.knightmare.util.WaterFrameBuffers;
+
+import javafx.scene.image.PixelFormat;
 
 public class LWJGLContext {
 
@@ -61,6 +68,7 @@ public class LWJGLContext {
 	private MasterRenderer renderer;
 	private Loader loader = new Loader();
 	private WaterFrameBuffers fbos;
+	private Fbo fbo;
 
 	public LWJGLContext(int width, int height) {
 		this.width = width;
@@ -78,8 +86,13 @@ public class LWJGLContext {
 			cursorPosCallback.release();
 			scrollCallback.release();
 			mouseButtonCallback.release();
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
 		} finally {
 			// Terminate GLFW and release the GLFWErrorCallback
+			AudioMaster.cleanUp();
+			PostProcessing.cleanUp();
+			fbo.cleanUp();
 			TextMaster.cleanUp();
 			renderer.cleanUp();
 			loader.cleanUp();
@@ -91,7 +104,9 @@ public class LWJGLContext {
 	private void init() {
 		// Setup an error callback. The default implementation
 		// will print the error message in System.err.
-		glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
+		glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));// TODO
+																						// maybe
+																						// own
 
 		// Initialize GLFW. Most GLFW functions will not work before doing this.
 		if (glfwInit() != GLFW_TRUE)
@@ -104,7 +119,7 @@ public class LWJGLContext {
 													// after creation
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be
 													// resizable
-
+		glfwWindowHint(GLFW.GLFW_SAMPLES, 16);// TODO count samples
 		// Create the window
 		window = glfwCreateWindow(width, height, "Knightmare", NULL, NULL);
 		if (window == NULL) {
@@ -127,6 +142,7 @@ public class LWJGLContext {
 
 		glfwShowWindow(window);
 		GL.createCapabilities();
+		GL11.glEnable(GL13.GL_MULTISAMPLE);
 
 		System.out.println("OS name " + System.getProperty("os.name"));
 		System.out.println("OS version " + System.getProperty("os.version"));
@@ -134,6 +150,8 @@ public class LWJGLContext {
 		System.out.println("OpenGL version " + glGetString(GL_VERSION));
 
 		fbos = new WaterFrameBuffers(width, height);
+		fbo = new Fbo(width, height, Fbo.DEPTH_RENDER_BUFFER);
+		PostProcessing.init(loader);
 		renderer = new MasterRenderer(width, height, loader, fbos, cameraHandler);
 		TextMaster.init(loader);
 		Level level = new Level(renderer, loader, fbos);
@@ -154,7 +172,12 @@ public class LWJGLContext {
 			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
 
 			Camera camera = cameraHandler.getCamera();
+			Vector3f camP = camera.getPosition();
+			AudioMaster.setListenerData(camP.x, camP.y, camP.z);//TODO try to move
 			Camera reflectionCam = camera.clone();
+
+			// Shadow Map
+			renderer.renderShadowMap(camera);
 
 			// Reflection
 			fbos.bindReflectionFrameBuffer();
@@ -170,12 +193,18 @@ public class LWJGLContext {
 			renderer.prepare();
 			renderer.renderScene(camera, new Vector4f(0, -1, 0, 0.5f));
 
-			// Display
+			// Post processing fbo
 			fbos.unbindCurrentFrameBuffer();
+			fbo.bindFrameBuffer();
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 			renderer.prepare();
 			renderer.renderScene(camera, new Vector4f(0, -1, 0, 10000));
-			renderer.renderWaterGui(camera);
+			renderer.renderWaterAndParticles(camera);
+			fbo.unbindFrameBuffer();
+			PostProcessing.doPostProcessing(fbo.getColourTexture());
+			
+			//Display
+			renderer.renderGui();
 			TextMaster.render();
 
 			glfwSwapBuffers(window); // swap the color buffers

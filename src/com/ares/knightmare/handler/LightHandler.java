@@ -77,4 +77,8 @@ public class LightHandler {
 		}
 		return sortetLights;
 	}
+
+	public Light getSun() {
+		return sun;
+	}
 }

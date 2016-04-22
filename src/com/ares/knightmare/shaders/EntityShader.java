@@ -15,7 +15,7 @@ public class EntityShader extends ShaderProgram {
 
 	private static final int MAX_LIGHTS = 4;
 
-	private static final String VERTEX_FILE = "res/shaders/vertexShaderEntity", FRAGMENT_FILE = "res/shaders/fragmentShaderEntity";
+	private static final String VERTEX_FILE = "/shaders/vertexShaderEntity", FRAGMENT_FILE = "/shaders/fragmentShaderEntity";
 
 	private int location_transformationMatrix, location_viewMatrix, location_projectionMatrix, location_lightPosition[], location_lightColor[], location_shineDamper,
 			location_reflectivity, location_useFakeLighting, location_skyColor, location_numberOfRows, location_offset, location_attenuation[], location_plane;

@@ -14,11 +14,11 @@ public class TerrainShader extends ShaderProgram {
 
 	private static final int MAX_LIGHTS = 4;
 
-	private static final String VERTEX_FILE = "res/shaders/vertexShaderTerrain", FRAGMENT_FILE = "res/shaders/fragmentShaderTerrain";
+	private static final String VERTEX_FILE = "/shaders/vertexShaderTerrain", FRAGMENT_FILE = "/shaders/fragmentShaderTerrain";
 
 	private int location_transformationMatrix, location_viewMatrix, location_projectionMatrix, location_lightPosition[], location_lightColor[], location_shineDamper,
 			location_reflectivity, location_skyColor, location_backgroundTexture, location_rTexture, location_gTexture, location_bTexture, location_blendMap,
-			location_attenuation[], location_plane;
+			location_attenuation[], location_plane, location_toShadowMapSpace, location_shadowMap;
 
 	public TerrainShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -45,6 +45,8 @@ public class TerrainShader extends ShaderProgram {
 		location_bTexture = super.getUniformLocation("bTexture");
 		location_blendMap = super.getUniformLocation("blendMap");
 		location_plane = super.getUniformLocation("plane");
+		location_toShadowMapSpace = super.getUniformLocation("toShadowMapSpace");
+		location_shadowMap = super.getUniformLocation("shadowMap");
 
 		location_lightPosition = new int[MAX_LIGHTS];
 		location_lightColor = new int[MAX_LIGHTS];
@@ -98,9 +100,14 @@ public class TerrainShader extends ShaderProgram {
 		super.loadInt(location_bTexture, 2);
 		super.loadInt(location_gTexture, 3);
 		super.loadInt(location_blendMap, 4);
+		super.loadInt(location_shadowMap, 5);
 	}
 	
 	public void loadClipPlane(Vector4f plane){
 		super.loadVector4f(location_plane, plane);
+	}
+	
+	public void loadToShadowMapSpaceMatrix(Matrix4f toShadowMapSpaceMatrix){
+		super.loadMatrix(location_toShadowMapSpace, toShadowMapSpaceMatrix);
 	}
 }

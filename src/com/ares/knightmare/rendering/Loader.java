@@ -1,6 +1,6 @@
 package com.ares.knightmare.rendering;
 
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
@@ -16,7 +18,6 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL33;
-
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.util.Texture;
 import com.ares.knightmare.util.TextureData;
@@ -77,7 +78,7 @@ public class Loader {
 		GL30.glBindVertexArray(0);
 	}
 
-	public void updateVbo(int vbo, float[] data, FloatBuffer buffer){
+	public void updateVbo(int vbo, float[] data, FloatBuffer buffer) {
 		buffer.clear();
 		buffer.put(data);
 		buffer.flip();
@@ -86,7 +87,7 @@ public class Loader {
 		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, buffer);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
-	
+
 	public RawModel loadToVAO(float[] positions, int diemensions) {
 		int vaoID = createVAO();
 		storeDataInAtrributeList(0, diemensions, positions);
@@ -96,10 +97,19 @@ public class Loader {
 
 	public int loadTexture(String fileName, String type) {
 		Texture texture = null;
-		texture = new Texture(new StringBuilder("res/").append(type).append("/").append(fileName).append(".png").toString());
+		texture = new Texture(new StringBuilder("/").append(type).append("/").append(fileName).append(".png").toString());
+		texture.bind();
 		GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0);
+		if (GL.getCapabilities().GL_EXT_texture_filter_anisotropic) {
+			float amount = Math.min(16f, GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+			// TODO set as hight as performance
+			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
+		} else {
+			System.out.println("Not supportet: Anisotropic");
+		}
+		texture.unbind();
 		int textureID = texture.getTextureID();
 		textures.add(textureID);
 		return textureID;
@@ -111,7 +121,7 @@ public class Loader {
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texID);
 
 		for (int i = 0; i < textureFiles.length; i++) {
-			TextureData data = decodeTextureFile(new StringBuilder("res/textures/").append(textureFiles[i]).append(".png").toString());
+			TextureData data = decodeTextureFile(new StringBuilder("/textures/").append(textureFiles[i]).append(".png").toString());
 			GL11.glTexImage2D(GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL11.GL_RGBA, data.getHeight(), data.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
 					data.getBuffer());
 		}
@@ -128,7 +138,7 @@ public class Loader {
 		int height = 0;
 		ByteBuffer buffer = null;
 		try {
-			FileInputStream in = new FileInputStream(fileName);
+			InputStream in = Class.class.getResourceAsStream(fileName);
 			PNGDecoder decoder = new PNGDecoder(in);
 			width = decoder.getWidth();
 			height = decoder.getHeight();

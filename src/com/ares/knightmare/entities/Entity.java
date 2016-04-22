@@ -5,15 +5,15 @@ import org.lwjgl.util.vector.Vector3f;
 import com.ares.knightmare.handler.TerrainHandler;
 import com.ares.knightmare.models.RawModel;
 import com.ares.knightmare.models.TexturedModel;
-import com.ares.knightmare.terrain.Terrain;
 import com.ares.knightmare.util.Maths;
 
 public class Entity {
 
 	private TexturedModel model;
 	private Vector3f position, cameraPosition;
-	private float rotX, rotY, rotZ, scale, distance = 10, xSpeed, ySpeed, zSpeed, BRAKE = -0.03f;//TODO use
-	public static final float GRAVITY = -0.03f; //TODO rework
+	private float rotX, rotY, rotZ, scale, distance = 10, xSpeed, ySpeed, zSpeed, BRAKE = -0.03f;// TODO
+																									// use
+	public static final float GRAVITY = -0.03f; // TODO rework
 	private Camera camera;
 	private int textureIndex;
 
@@ -35,7 +35,7 @@ public class Entity {
 		this.scale = scale;
 		this.textureIndex = textureIndex;
 	}
-	
+
 	public void setCamera(Camera camera) {
 		this.camera = camera;
 		float[] args = calculateCam(distance);
@@ -99,8 +99,9 @@ public class Entity {
 
 	private Vector3f getTop() {
 		float s = (float) (model.getRawModel().getToTop() * Math.cos(Math.toRadians(90 + rotX)));
-		return new Vector3f((float) (position.x - s * Math.sin(Math.toRadians(rotY))),
-				(float) (position.y + model.getRawModel().getToTop() * Math.sin(Math.toRadians(90 + rotX))), (float) (position.z + s * Math.cos(Math.toRadians(rotY))));
+		return new Vector3f((float) (position.x - scale * s * Math.sin(Math.toRadians(rotY))),
+				(float) (position.y + scale * model.getRawModel().getToTop() * Math.sin(Math.toRadians(90 + rotX))),
+				(float) (position.z + scale * s * Math.cos(Math.toRadians(rotY))));
 	}
 
 	public float getTextureXOffset() {
@@ -174,8 +175,8 @@ public class Entity {
 		}
 		float[] args = calculateCam(this.distance);
 		camera.set(cameraPosition.x + args[3], cameraPosition.y + args[4], cameraPosition.z + args[5], args[0], args[1], args[2]);
-		
-		Vector3f[] corners = getCorners();//TODO
+
+		Vector3f[] corners = getCorners();// TODO
 	}
 
 	public Vector3f[] getCorners() {
@@ -183,8 +184,8 @@ public class Entity {
 		return Maths.calculateCorners(position, new Vector3f(model.getWidth(), model.getHeight(), model.getDepth()),
 				new Vector3f(model.getToRight(), model.getToTop(), model.getToEnd()), new Vector3f(rotX, rotY, rotZ));
 	}
-	
-	public void screem(){
+
+	public void screem() {
 		System.out.println("You got me!");
 	}
 

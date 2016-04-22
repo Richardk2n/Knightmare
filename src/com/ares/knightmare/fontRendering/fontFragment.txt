@@ -17,6 +17,11 @@ const vec2 offset = vec2(0.004, 0.004);//creates shadow
 
 const vec3 outlineColor = vec3(0, 0, 1);
 
+float smoothlyStep(float edge0, float edge1, float x){//TODO use if smothstep crashes
+    float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+    return t * t * (3.0 - 2.0 * t);
+}
+
 void main(void){
 
 	float distance = 1.0 - texture(fontAtlas, pass_textureCoords).a;

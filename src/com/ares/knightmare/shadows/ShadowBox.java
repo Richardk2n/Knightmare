@@ -22,16 +22,15 @@ import com.ares.knightmare.rendering.MasterRenderer;
  */
 public class ShadowBox {
 
-	private static final float OFFSET = 10;
+	private static final float OFFSET = 20;//TODO low angle -> high offset needed
 	private static final Vector4f UP = new Vector4f(0, 1, 0, 0);
 	private static final Vector4f FORWARD = new Vector4f(0, 0, -1, 0);
-	private static final float SHADOW_DISTANCE = 100;
+	private static final float SHADOW_DISTANCE = 150; //TODO Could be fourther
 
 	private float minX, maxX;
 	private float minY, maxY;
 	private float minZ, maxZ;
 	private Matrix4f lightViewMatrix;
-	private Camera cam;
 
 	private float farHeight, farWidth, nearHeight, nearWidth;
 
@@ -48,9 +47,8 @@ public class ShadowBox {
 	 * @param camera
 	 *            - the in-game camera.
 	 */
-	protected ShadowBox(Matrix4f lightViewMatrix, Camera camera) {
+	protected ShadowBox(Matrix4f lightViewMatrix) {
 		this.lightViewMatrix = lightViewMatrix;
-		this.cam = camera;
 		calculateWidthsAndHeights();
 	}
 
@@ -60,8 +58,8 @@ public class ShadowBox {
 	 * possible while still ensuring that everything inside the camera's view
 	 * (within a certain range) will cast shadows.
 	 */
-	protected void update() {
-		Matrix4f rotation = calculateCameraRotationMatrix();
+	protected void update(Camera cam) {
+		Matrix4f rotation = calculateCameraRotationMatrix(cam);
 		Vector3f forwardVector = new Vector3f(Matrix4f.transform(rotation, FORWARD, null));
 
 		Vector3f toFar = new Vector3f(forwardVector);
@@ -209,7 +207,7 @@ public class ShadowBox {
 	/**
 	 * @return The rotation of the camera represented as a matrix.
 	 */
-	private Matrix4f calculateCameraRotationMatrix() {
+	private Matrix4f calculateCameraRotationMatrix(Camera cam) {
 		Matrix4f rotation = new Matrix4f();
 		rotation.rotate((float) Math.toRadians(-cam.getYaw()), new Vector3f(0, 1, 0));
 		rotation.rotate((float) Math.toRadians(-cam.getPitch()), new Vector3f(1, 0, 0));

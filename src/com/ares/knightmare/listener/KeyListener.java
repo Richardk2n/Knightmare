@@ -8,6 +8,8 @@ import java.util.TimerTask;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.util.vector.Vector3f;
 
+import com.ares.knightmare.audio.AudioMaster;
+import com.ares.knightmare.audio.Source;
 import com.ares.knightmare.handler.CameraHandler;
 import com.ares.knightmare.particles.Particle;
 import com.ares.knightmare.particles.ParticleTexture;
@@ -130,6 +132,9 @@ public class KeyListener extends GLFWKeyCallback {
 			if (action == GLFW_PRESS) {
 //				ParticleTexture particleTexture = new ParticleTexture(loader, numberOfRows)TODO
 //				level.getRenderer().addParticle(new Particle(new Vector3f(level.geEntity().getPosition()), new Vector3f(0, 0.5f, 0), 0.25f, 100, 0, 1));
+				int buffer = AudioMaster.loadSound("sounds/bounce.wav");
+				Source source = AudioMaster.generateSource(1);
+				source.play(buffer);
 			}
 		}
 	}

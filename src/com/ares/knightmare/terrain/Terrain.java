@@ -1,7 +1,6 @@
 package com.ares.knightmare.terrain;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -46,7 +45,7 @@ public class Terrain {
 	private RawModel generateTerrain(Loader loader, String heightMap) {
 		BufferedImage image = null;
 		try {
-			image = ImageIO.read(new File(new StringBuilder("res/maps/height/").append(heightMap).append(".png").toString()));
+			image = ImageIO.read(Class.class.getResourceAsStream(new StringBuilder("/maps/height/").append(heightMap).append(".png").toString()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

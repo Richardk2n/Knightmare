@@ -7,8 +7,8 @@ import com.ares.knightmare.shaders.ShaderProgram;
 
 public class FontShader extends ShaderProgram{
 
-	private static final String VERTEX_FILE = "src/com/ares/knightmare/fontRendering/fontVertex.txt";
-	private static final String FRAGMENT_FILE = "src/com/ares/knightmare/fontRendering/fontFragment.txt";
+	private static final String VERTEX_FILE = "/com/ares/knightmare/fontRendering/fontVertex.txt";
+	private static final String FRAGMENT_FILE = "/com/ares/knightmare/fontRendering/fontFragment.txt";
 	
 	private int location_translation, location_color;
 	

@@ -26,7 +26,7 @@ public class SkyboxRenderer {
 
 			-SIZE, -SIZE, -SIZE, -SIZE, -SIZE, SIZE, SIZE, -SIZE, -SIZE, SIZE, -SIZE, -SIZE, -SIZE, -SIZE, SIZE, SIZE, -SIZE, SIZE };
 	private static String[] TEXTURE_FILES = { "right", "left", "top", "bottom", "back", "front" },
-			NIGHT_TEXTURE_FILES = { "nightright", "nightleft", "nighttop", "nightbottom", "nightback", "nightfront" };
+			NIGHT_TEXTURE_FILES = { "nightRight", "nightLeft", "nightTop", "nightBottom", "nightBack", "nightFront" };
 	private RawModel cube;
 	private int texture, nightTexture;
 	private SkyboxShader shader;

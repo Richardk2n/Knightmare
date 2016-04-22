@@ -1,7 +1,6 @@
 package com.ares.knightmare.util;
 
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -23,7 +22,7 @@ public class Texture {
 	private int load(String path) {
 		int[] pixels = null;
 		try {
-			BufferedImage image = ImageIO.read(new FileInputStream(path));
+			BufferedImage image = ImageIO.read(Class.class.getResourceAsStream(path));
 			width = image.getWidth();
 			height = image.getHeight();
 			pixels = new int[width * height];
@@ -44,14 +43,16 @@ public class Texture {
 
 		int result = glGenTextures();
 		glBindTexture(GL_TEXTURE_2D, result);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		IntBuffer buffer = ByteBuffer.allocateDirect(data.length << 2).order(ByteOrder.nativeOrder()).asIntBuffer();
 		buffer.put(data).flip();
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		
+		unbind();
 		return result;
 	}
 
