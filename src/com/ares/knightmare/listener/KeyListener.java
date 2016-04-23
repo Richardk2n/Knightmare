@@ -6,13 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.lwjgl.glfw.GLFWKeyCallback;
-import org.lwjgl.util.vector.Vector3f;
-
-import com.ares.knightmare.entities.Particle;
-import com.ares.knightmare.entities.Source;
-import com.ares.knightmare.handler.AudioMaster;
 import com.ares.knightmare.handler.CameraHandler;
-import com.ares.knightmare.textures.ParticleTexture;
 import com.ares.knightmare.util.Level;
 
 public class KeyListener extends GLFWKeyCallback {
@@ -20,7 +14,7 @@ public class KeyListener extends GLFWKeyCallback {
 	private CameraHandler cameraHandler;
 	private Level level;
 	private Timer timerW, timerS, timerA, timerD, timerSp, timerSh;
-	private static final float speed = 0.1f;
+	private static final float speed = 0.05f;
 	private static final int period = 5;
 
 	public KeyListener(CameraHandler cameraHandler, Level level) {
@@ -132,9 +126,9 @@ public class KeyListener extends GLFWKeyCallback {
 			if (action == GLFW_PRESS) {
 //				ParticleTexture particleTexture = new ParticleTexture(loader, numberOfRows)TODO
 //				level.getRenderer().addParticle(new Particle(new Vector3f(level.geEntity().getPosition()), new Vector3f(0, 0.5f, 0), 0.25f, 100, 0, 1));
-				int buffer = AudioMaster.loadSound("sounds/bounce.wav");
-				Source source = AudioMaster.generateSource(1);
-				source.play(buffer);
+//				int buffer = AudioHandler.loadSound("sounds/bounce.wav");
+//				Source source = AudioHandler.generateSource(1);
+//				source.play(buffer);
 			}
 		}
 	}

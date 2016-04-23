@@ -10,22 +10,22 @@ import com.ares.knightmare.util.fontMeshCreator.FontType;
 import com.ares.knightmare.util.fontMeshCreator.GUIText;
 import com.ares.knightmare.util.fontMeshCreator.TextMeshData;
 
-public class TextMaster {
+public class TextHandler {
 
-	private static Loader loader;
-	private static HashMap<FontType, List<GUIText>> texts = new HashMap<FontType, List<GUIText>>();
-	private static FontRenderer renderer;
+	private Loader loader;
+	private HashMap<FontType, List<GUIText>> texts = new HashMap<FontType, List<GUIText>>();
+	private FontRenderer renderer;
 	
-	public static void init(Loader loader){
+	public TextHandler(Loader loader){
 		renderer = new FontRenderer();
-		TextMaster.loader = loader;
+		this.loader = loader;
 	}
 	
-	public static void render(){
+	public void render(){
 		renderer.render(texts);
 	}
 	
-	public static void loadText(GUIText text){
+	public void loadText(GUIText text){
 		FontType font = text.getFont();
 		TextMeshData data = font.loadText(text);
 		int vao = loader.loadToVAO(data.getVertexPositions(), data.getTextureCoords());
@@ -38,7 +38,7 @@ public class TextMaster {
 		textBatch.add(text);
 	}
 	
-	public static void removeText(GUIText text){
+	public void removeText(GUIText text){
 		List<GUIText> textBatch = texts.get(text.getFont());
 		textBatch.remove(text);
 		loader.deleteVAO(text.getVAOID());
@@ -47,7 +47,7 @@ public class TextMaster {
 		}
 	}
 	
-	public static void cleanUp(){
+	public void cleanUp(){
 		renderer.cleanUp();
 	}
 }

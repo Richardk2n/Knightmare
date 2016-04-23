@@ -30,10 +30,9 @@ public class SkyboxRenderer {
 			NIGHT_TEXTURE_FILES = { "nightRight", "nightLeft", "nightTop", "nightBottom", "nightBack", "nightFront" };
 	private RawModel cube;
 	private int texture, nightTexture;
-	private SkyboxShader shader;
+	private SkyboxShader shader = new SkyboxShader();
 
-	public SkyboxRenderer(SkyboxShader shader, Matrix4f projectionMatrix, Loader loader) {
-		this.shader = shader;
+	public SkyboxRenderer(Matrix4f projectionMatrix, Loader loader) {
 		cube = loader.loadToVAO(VERTICES, 3);
 		texture = loader.loadCubeMap(TEXTURE_FILES);
 		nightTexture = loader.loadCubeMap(NIGHT_TEXTURE_FILES);
@@ -64,5 +63,9 @@ public class SkyboxRenderer {
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, nightTexture);
 		shader.loadBlendFactor(factor);
+	}
+
+	public void cleanUp() {
+		shader.cleanUp();
 	}
 }

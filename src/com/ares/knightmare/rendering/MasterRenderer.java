@@ -17,57 +17,51 @@ import com.ares.knightmare.entities.Entity;
 import com.ares.knightmare.entities.Light;
 import com.ares.knightmare.entities.Particle;
 import com.ares.knightmare.entities.ParticleSystem;
+import com.ares.knightmare.entities.Source;
 import com.ares.knightmare.entities.Terrain;
 import com.ares.knightmare.entities.WaterTile;
+import com.ares.knightmare.handler.AudioHandler;
 import com.ares.knightmare.handler.CameraHandler;
 import com.ares.knightmare.handler.EntityHandler;
 import com.ares.knightmare.handler.LightHandler;
 import com.ares.knightmare.handler.NormalMappedEntityHandler;
 import com.ares.knightmare.handler.ParticleHandler;
 import com.ares.knightmare.handler.TerrainHandler;
+import com.ares.knightmare.handler.TextHandler;
 import com.ares.knightmare.handler.TimeHandler;
 import com.ares.knightmare.handler.WaterHandler;
 import com.ares.knightmare.loader.Loader;
-import com.ares.knightmare.shaders.GuiShader;
-import com.ares.knightmare.shaders.ParticleShader;
-import com.ares.knightmare.shaders.SkyboxShader;
-import com.ares.knightmare.shaders.EntityShader;
-import com.ares.knightmare.shaders.TerrainShader;
-import com.ares.knightmare.shaders.WaterShader;
 import com.ares.knightmare.shadows.ShadowMapMasterRenderer;
 import com.ares.knightmare.textures.GuiTexture;
 import com.ares.knightmare.util.FrameBufferObject;
+import com.ares.knightmare.util.fontMeshCreator.GUIText;
 
 public class MasterRenderer {
 
 	public static final float FOV = 70, NEAR_PLANE = 0.1f, FAR_PLANE = 1000;
 	public static final float SKY_R = 0.4f, SKY_G = 0.5f, SKY_B = 0.5f;
+	private static final float SHADOW_DISTANCE = 150, TRANSITION_DISTANCE_SHADOW = 10;
+	private static final int SHADOW_PFC_COUNT = 1; //TODO settings
 
-	private EntityShader entityShader = new EntityShader();
 	private EntityRenderer entityRenderer;
-	private TerrainShader terrainShader = new TerrainShader();
 	private TerrainRenderer terrainRenderer;
-	private GuiShader guiShader = new GuiShader();
 	private GuiRenderer guiRenderer;
-	private SkyboxShader skyboxShader = new SkyboxShader();
 	private SkyboxRenderer skyboxRenderer;
-	private WaterShader waterShader = new WaterShader();
 	private WaterRenderer waterRenderer;
-	private ParticleShader particleShader = new ParticleShader();
 	private ParticleRenderer particleRenderer;
-	
 	private NormalMappingRenderer normalMappingRenderer;
-	
 	private ShadowMapMasterRenderer shadowMapMasterRenderer;
-	
+
 	private TimeHandler timeHandler;
-	
+
 	private EntityHandler entityHandler = new EntityHandler();
 	private NormalMappedEntityHandler normalMappedEntityHandler = new NormalMappedEntityHandler();
 	private LightHandler lightHandler = new LightHandler();
 	private TerrainHandler terrainHandler = new TerrainHandler();
 	private WaterHandler waterHandler = new WaterHandler();
-	private ParticleHandler particleHandler = new ParticleHandler(1);
+	private ParticleHandler particleHandler = new ParticleHandler(1);// TODO
+	private AudioHandler audioHandler = new AudioHandler();
+	private TextHandler textHandler;
 
 	private Matrix4f projectionMatrix;
 
@@ -75,23 +69,25 @@ public class MasterRenderer {
 
 	private List<GuiTexture> guis = new ArrayList<>();
 
-	public MasterRenderer(int width, int height, Loader loader, /*WaterFrameBuffers fbos*/FrameBufferObject reflectionFrameBuffer, FrameBufferObject refractionFrameBuffer, CameraHandler cameraHandler) {
+	public MasterRenderer(int width, int height, Loader loader, FrameBufferObject reflectionFrameBuffer, FrameBufferObject refractionFrameBuffer,
+			CameraHandler cameraHandler) {
 		MasterRenderer.width = width;
 		MasterRenderer.height = height;
 		enableCulling();
 		createProjectionMatrix();
-		entityRenderer = new EntityRenderer(entityShader, projectionMatrix, lightHandler);
-		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix, lightHandler);
-		guiRenderer = new GuiRenderer(guiShader, loader);
-		skyboxRenderer = new SkyboxRenderer(skyboxShader, projectionMatrix, loader);
-		waterRenderer = new WaterRenderer(waterShader, projectionMatrix, loader, /*fbos*/reflectionFrameBuffer, refractionFrameBuffer, lightHandler);
+		entityRenderer = new EntityRenderer(projectionMatrix, lightHandler);
+		terrainRenderer = new TerrainRenderer(projectionMatrix, lightHandler);
+		guiRenderer = new GuiRenderer(loader);
+		skyboxRenderer = new SkyboxRenderer(projectionMatrix, loader);
+		waterRenderer = new WaterRenderer(projectionMatrix, loader, reflectionFrameBuffer, refractionFrameBuffer, lightHandler);
 		particleRenderer = new ParticleRenderer(loader, projectionMatrix);
 
 		normalMappingRenderer = new NormalMappingRenderer(projectionMatrix, lightHandler);
-		
+
 		shadowMapMasterRenderer = new ShadowMapMasterRenderer();
-		
+
 		timeHandler = new TimeHandler(entityHandler, normalMappedEntityHandler, lightHandler, terrainHandler, waterHandler, particleHandler, cameraHandler);
+		textHandler = new TextHandler(loader);
 	}
 
 	public static void enableCulling() {
@@ -112,113 +108,92 @@ public class MasterRenderer {
 	}
 
 	public void renderScene(Camera camera, Vector4f plane) {
-		//entities
-		entityShader.start();
-		entityShader.loadClipPlane(plane);
-		entityShader.loadSkyColor(SKY_R, SKY_G, SKY_B);
-		entityShader.loadViewMatrix(camera);
-		entityRenderer.render(entityHandler.getRenderedEntities(camera));
-		entityShader.stop();
-		
-		//normal mapped entities
+		entityRenderer.render(entityHandler.getRenderedEntities(camera), plane, SKY_R, SKY_G, SKY_B, camera);
+
 		normalMappingRenderer.render(normalMappedEntityHandler.getRenderedEntities(camera), plane, camera);
-		
-		//terrain
-		terrainShader.start();
-		terrainShader.loadClipPlane(plane);
-		terrainShader.loadSkyColor(SKY_R, SKY_G, SKY_B);
-		terrainShader.loadViewMatrix(camera);
-		terrainShader.loadShadowVariables(150, 10, 1);//TODO graphic settings
-		terrainRenderer.render(terrainHandler.getRenderedTerrains(camera), shadowMapMasterRenderer.getToShadowMapSpaceMatrix());
-		terrainShader.stop();
-		
-		//skybox
-		skyboxShader.start();
+
+		terrainRenderer.render(terrainHandler.getRenderedTerrains(camera), shadowMapMasterRenderer.getToShadowMapSpaceMatrix(), plane, SKY_R, SKY_G, SKY_B, camera,
+				SHADOW_DISTANCE, TRANSITION_DISTANCE_SHADOW, SHADOW_PFC_COUNT);
+
 		skyboxRenderer.render(camera, SKY_R, SKY_G, SKY_B);
-		skyboxShader.stop();
 	}
-	
-	public void renderWaterAndParticles(Camera camera){
-		//water
-		waterShader.start();
-		waterShader.loadPlanes(NEAR_PLANE, FAR_PLANE);
-		waterShader.loadSkyColor(SKY_R, SKY_G, SKY_B);
-		waterRenderer.render(waterHandler.getRenderedWaters(camera), camera);
-		waterShader.stop();
-		
-		//particles
+
+	public void renderWaterAndParticles(Camera camera) {
+		waterRenderer.render(waterHandler.getRenderedWaters(camera), camera, NEAR_PLANE, FAR_PLANE, SKY_R, SKY_G, SKY_B);
+
 		try {
-			particleHandler.acquire();//Maybe try as not this important
+			particleHandler.acquire();//TODO Maybe try as not this important
 		} catch (InterruptedException e) {
-			//TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		particleRenderer.render(particleHandler.getRenderedParticles(camera), camera);
 		particleHandler.release();
 	}
-	
-	public void renderGui(){
-		guiShader.start();
+
+	public void renderGui() {
 		guiRenderer.render(guis);
-		guiShader.stop();
 	}
-	
-	public void renderShadowMap(Camera camera){
+
+	public void renderText() {
+		textHandler.render();
+	}
+
+	public void renderShadowMap(Camera camera) {
 		shadowMapMasterRenderer.render(entityHandler.getRenderedEntities(camera), normalMappedEntityHandler.getRenderedEntities(camera), lightHandler.getSun(), camera);
 	}
-	
+
 	public void addTerrain(Terrain terrain) {
 		terrainHandler.store(terrain);
 	}
-	
+
 	public void removeTerrain(Terrain terrain) {
 		terrainHandler.remove(terrain);
 	}
-	
+
 	public void addGui(GuiTexture gui) {
 		guis.add(gui);
 	}
-	
+
 	public void removeGui(GuiTexture gui) {
 		guis.remove(gui);
 	}
-	
+
 	public void addLight(Light light) {
 		lightHandler.store(light);
 	}
-	
+
 	public void removeLight(Light light) {
 		lightHandler.remove(light);
 	}
-	
+
 	public void addSun(Light sun) {
 		lightHandler.setSun(sun);
 	}
-	
+
 	public void removeSun() {
 		lightHandler.setSun(null);
 	}
-	
+
 	public void addEntity(Entity entity) {
 		entityHandler.store(entity);
 	}
-	
+
 	public void removeEntity(Entity entity) {
 		entityHandler.remove(entity);
 	}
-	
+
 	public void addNormalMappedEntity(Entity entity) {
 		normalMappedEntityHandler.store(entity);
 	}
-	
+
 	public void removeNormalMappedEntity(Entity entity) {
 		normalMappedEntityHandler.remove(entity);
 	}
-	
+
 	public void addWater(WaterTile water) {
 		waterHandler.store(water);
 	}
-	
+
 	public void removeWater(WaterTile water) {
 		waterHandler.remove(water);
 	}
@@ -226,32 +201,33 @@ public class MasterRenderer {
 	public void addParticle(Particle particle) {
 		particleHandler.store(particle);
 	}
-	
+
 	public void removeParticle(Particle particle) {
 		particleHandler.remove(particle);
 	}
-	
+
 	public void addParticleSystem(ParticleSystem particleSystem) {
 		particleHandler.store(particleSystem);
 	}
-	
+
 	public void removeParticleSystem(ParticleSystem particleSystem) {
 		particleHandler.remove(particleSystem);
 	}
 
 	public void cleanUp() {
-		entityShader.cleanUp();
-		terrainShader.cleanUp();
-		guiShader.cleanUp();
-		skyboxShader.cleanUp();
-		waterShader.cleanUp();
-		particleShader.cleanUp();
+		entityRenderer.cleanUp();
+		terrainRenderer.cleanUp();
+		guiRenderer.cleanUp();
+		skyboxRenderer.cleanUp();
+		waterRenderer.cleanUp();
 		normalMappingRenderer.cleanUp();
 		shadowMapMasterRenderer.cleanUp();
+		audioHandler.cleanUp();
+		textHandler.cleanUp();
 	}
 
 	private void createProjectionMatrix() {
-    	projectionMatrix = new Matrix4f();
+		projectionMatrix = new Matrix4f();
 		float aspectRatio = (float) width / (float) height;
 		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))));
 		float x_scale = y_scale / aspectRatio;
@@ -264,16 +240,42 @@ public class MasterRenderer {
 		projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
 		projectionMatrix.m33 = 0;
 	}
-	
-	public Matrix4f getProjectionMatrix(){
+
+	public Matrix4f getProjectionMatrix() {
 		return projectionMatrix;
 	}
-	
-	public TerrainHandler getTerrainHandler(){
+
+	public TerrainHandler getTerrainHandler() {
 		return terrainHandler;
 	}
-	
-	public int getShadowMapTexture(){
+
+	public int getShadowMapTexture() {
 		return shadowMapMasterRenderer.getShadowMap();
+	}
+
+	public void setListenerData(float x, float y, float z, float rotX, float rotY, float rotZ) {// TODO
+																								// world
+																								// handler
+																								// audio
+																								// ->
+																								// game
+																								// cycle
+		audioHandler.setListenerData(x, y, z, rotX, rotY, rotZ);
+	}
+
+	public int loadSound(String path) {
+		return audioHandler.loadSound(path);
+	}
+
+	public Source generateSource(float volume) {// TODO set volume 1 maybe
+		return audioHandler.generateSource(volume);
+	}
+
+	public void addText(GUIText text) {
+		textHandler.loadText(text);
+	}
+
+	public void removeText(GUIText text) {
+		textHandler.removeText(text);
 	}
 }

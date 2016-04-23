@@ -9,18 +9,18 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.ares.knightmare.entities.Camera;
 import com.ares.knightmare.entities.Entity;
-import com.ares.knightmare.models.TexturedModel;
+import com.ares.knightmare.models.RawModel;
 
 public class EntityHandler {
 
 	private static final float CHUNCK_SIZE = 100;
 	private static final int RENDER_DISTANCE = 8;
 	private List<Entity> entities = new ArrayList<>();
-	private Map<TexturedModel, List<Entity>> entitiesModel = new HashMap<>();
+	private Map<RawModel, List<Entity>> entitiesModel = new HashMap<>();
 
 	public void store(Entity entity) {
 		entities.add(entity);
-		TexturedModel entityModel = entity.getModel();
+		RawModel entityModel = entity.getModel();
 		List<Entity> batch = entitiesModel.get(entityModel);
 		if (batch == null) {
 			List<Entity> newBatch = new ArrayList<>();
@@ -33,7 +33,7 @@ public class EntityHandler {
 
 	public void remove(Entity entity) {
 		entities.remove(entity);
-		TexturedModel entityModel = entity.getModel();
+		RawModel entityModel = entity.getModel();
 		List<Entity> list = entitiesModel.get(entityModel);
 		list.remove(entity);
 		if (list.isEmpty()) {
@@ -41,7 +41,7 @@ public class EntityHandler {
 		}
 	}
 
-	public Map<TexturedModel, List<Entity>> getRenderedEntities(Camera camera) {
+	public Map<RawModel, List<Entity>> getRenderedEntities(Camera camera) {
 		Vector3f position = camera.getPosition(); // TODO view direction
 		int x = (int) Math.floor(position.x / CHUNCK_SIZE);
 		int y = (int) Math.floor(position.y / CHUNCK_SIZE);
@@ -62,11 +62,11 @@ public class EntityHandler {
 		return sort(entities);
 	}
 
-	private Map<TexturedModel, List<Entity>> sort(List<Entity> entities) {
-		Map<TexturedModel, List<Entity>> map = new HashMap<>();
+	private Map<RawModel, List<Entity>> sort(List<Entity> entities) {
+		Map<RawModel, List<Entity>> map = new HashMap<>();
 
 		for (Entity entity : entities) {
-			TexturedModel entityModel = entity.getModel();
+			RawModel entityModel = entity.getModel();
 			List<Entity> batch = map.get(entityModel);
 			if (batch == null) {
 				List<Entity> newBatch = new ArrayList<>();

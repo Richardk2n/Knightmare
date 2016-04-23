@@ -10,7 +10,7 @@ import com.ares.knightmare.entities.Terrain;
 public class TerrainHandler {
 
 	private static final float CHUNCK_SIZE = 100;
-	private static final int RENDER_DISTANCE = 8;
+	private static final int RENDER_DISTANCE = 8;//TODO
 	private List<Terrain> terrains = new ArrayList<>();
 
 	public void store(Terrain Terrain) {

@@ -31,7 +31,7 @@ public class SkyboxShader extends ShaderProgram {
 
 				@Override
 				public void run() {
-					currenRotation += ROTATE_SPEED;
+					currenRotation += ROTATE_SPEED;//TODO time handler
 					currentTime += TIME_SPEED;
 				}
 			}, 0, 10);

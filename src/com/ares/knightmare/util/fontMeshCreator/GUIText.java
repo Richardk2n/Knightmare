@@ -3,8 +3,6 @@ package com.ares.knightmare.util.fontMeshCreator;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.ares.knightmare.handler.TextMaster;
-
 /**
  * Represents a piece of text in the game.
  * 
@@ -61,14 +59,6 @@ public class GUIText {
 		this.position = position;
 		this.lineMaxSize = maxLineLength;
 		this.centerText = centered;
-		TextMaster.loadText(this);
-	}
-
-	/**
-	 * Remove the text from the screen.
-	 */
-	public void remove() {
-		TextMaster.removeText(this);
 	}
 
 	/**

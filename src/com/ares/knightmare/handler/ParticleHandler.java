@@ -10,14 +10,17 @@ import java.util.concurrent.Semaphore;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.ares.knightmare.entities.Camera;
-import com.ares.knightmare.entities.Entity;
 import com.ares.knightmare.entities.Particle;
 import com.ares.knightmare.entities.ParticleSystem;
-import com.ares.knightmare.models.TexturedModel;
 import com.ares.knightmare.textures.ParticleTexture;
 import com.ares.knightmare.util.InsertionSort;
 
 public class ParticleHandler extends Semaphore{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2292159054788242862L;
 
 	public ParticleHandler(int permits) {
 		super(permits);

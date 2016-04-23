@@ -17,15 +17,15 @@ import com.ares.knightmare.util.Maths;
 public class GuiRenderer {
 	
 	private final RawModel quad;
-	private GuiShader shader;
+	private GuiShader shader = new GuiShader();
 
-	public GuiRenderer(GuiShader shader, Loader loader){
+	public GuiRenderer(Loader loader){
 		float[] positions = { -1, 1, -1, -1, 1, 1, 1, -1 };
 		quad = loader.loadToVAO(positions, 2);
-		this.shader = shader;
 	}
 	
 	public void render(List<GuiTexture> guis){
+		shader.start();
 		GL30.glBindVertexArray(quad.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -42,5 +42,10 @@ public class GuiRenderer {
 		GL11.glDisable(GL11.GL_BLEND);
 		GL20.glDisableVertexAttribArray(0);
 		GL30.glBindVertexArray(0);
+		shader.stop();
+	}
+
+	public void cleanUp() {
+		shader.cleanUp();
 	}
 }

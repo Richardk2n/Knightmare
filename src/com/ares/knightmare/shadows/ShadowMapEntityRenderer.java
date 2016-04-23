@@ -11,7 +11,6 @@ import org.lwjgl.util.vector.Matrix4f;
 
 import com.ares.knightmare.entities.Entity;
 import com.ares.knightmare.models.RawModel;
-import com.ares.knightmare.models.TexturedModel;
 import com.ares.knightmare.rendering.MasterRenderer;
 import com.ares.knightmare.shaders.ShadowShader;
 import com.ares.knightmare.util.Maths;
@@ -41,9 +40,8 @@ public class ShadowMapEntityRenderer {
 	 * @param entities
 	 *            - the entities to be rendered to the shadow map.
 	 */
-	protected void render(Map<TexturedModel, List<Entity>> entities) {
-		for (TexturedModel model : entities.keySet()) {
-			RawModel rawModel = model.getRawModel();
+	protected void render(Map<RawModel, List<Entity>> entities) {
+		for (RawModel model : entities.keySet()) {
 			bindModel(model);
 			GL13.glActiveTexture(GL13.GL_TEXTURE0);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getId());
@@ -52,7 +50,7 @@ public class ShadowMapEntityRenderer {
 			}
 			for (Entity entity : entities.get(model)) {
 				prepareInstance(entity);
-				GL11.glDrawElements(GL11.GL_TRIANGLES, rawModel.getVertexCount(),
+				GL11.glDrawElements(GL11.GL_TRIANGLES, model.getVertexCount(),
 						GL11.GL_UNSIGNED_INT, 0);
 			}
 			if(model.getTexture().isHasTransparency()){
@@ -72,8 +70,8 @@ public class ShadowMapEntityRenderer {
 	 * @param model
 	 *            - the model to be bound.
 	 */
-	private void bindModel(TexturedModel model) {
-		GL30.glBindVertexArray(model.getRawModel().getVaoID());
+	private void bindModel(RawModel model) {
+		GL30.glBindVertexArray(model.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
 		shader.loadNumberOfRows(model.getTexture().getNumberOfRows());

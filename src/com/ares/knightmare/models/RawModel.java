@@ -1,9 +1,12 @@
 package com.ares.knightmare.models;
 
+import com.ares.knightmare.textures.ModelTexture;
+
 public class RawModel {
 
 	private int vaoID, vertexCount;
 	private float height, width, depth, toTop, toRight, toEnd;
+	private ModelTexture texture;
 	
 	public RawModel(int vaoID, int vertexCount){
 		this.vaoID = vaoID;
@@ -64,5 +67,13 @@ public class RawModel {
 
 	public void setToEnd(float toEnd) {
 		this.toEnd = toEnd;
+	}
+
+	public ModelTexture getTexture() {
+		return texture;
+	}
+
+	public void setTexture(ModelTexture texture) {
+		this.texture = texture;
 	}
 }

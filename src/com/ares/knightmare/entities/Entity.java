@@ -4,20 +4,18 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.ares.knightmare.handler.TerrainHandler;
 import com.ares.knightmare.models.RawModel;
-import com.ares.knightmare.models.TexturedModel;
 import com.ares.knightmare.util.Maths;
 
 public class Entity {
 
-	private TexturedModel model;
+	private RawModel model;
 	private Vector3f position, cameraPosition;
-	private float rotX, rotY, rotZ, scale, distance = 10, xSpeed, ySpeed, zSpeed, BRAKE = -0.03f;// TODO
-																									// use
-	public static final float GRAVITY = -0.03f; // TODO rework
+	private float rotX, rotY, rotZ, scale, distance = 10, xSpeed, ySpeed, zSpeed, BRAKE = -0.03f;// TODO use
+	public static final float GRAVITY = -0.001f; // TODO rework
 	private Camera camera;
 	private int textureIndex;
 
-	public Entity(TexturedModel model, Vector3f position, float rotY, float rotX, float rotZ, float scale) {
+	public Entity(RawModel model, Vector3f position, float rotY, float rotX, float rotZ, float scale) {
 		this.model = model;
 		this.position = position;
 		this.rotX = rotX;
@@ -26,7 +24,7 @@ public class Entity {
 		this.scale = scale;
 	}
 
-	public Entity(TexturedModel model, Vector3f position, float rotY, float rotX, float rotZ, float scale, int textureIndex) {
+	public Entity(RawModel model, Vector3f position, float rotY, float rotX, float rotZ, float scale, int textureIndex) {
 		this.model = model;
 		this.position = position;
 		this.rotX = rotX;
@@ -48,7 +46,7 @@ public class Entity {
 
 	public void tick(TerrainHandler terrainHandler) {
 		position.y += ySpeed;
-		ySpeed += GRAVITY;
+		ySpeed += GRAVITY*15;//TODO
 		float terrainHeight = terrainHandler.getHeightOfTerrain(position.x, position.z);
 		if (position.y < terrainHeight) {
 			ySpeed = 0;
@@ -80,17 +78,17 @@ public class Entity {
 			this.rotX = -90;
 		}
 		this.rotZ += rotZ;
-		
+
 		this.rotX %= 360;
 		this.rotY %= 360;
-		if(this.rotY>180){
-			this.rotY -=360;//TODO
+		if (this.rotY > 180) {
+			this.rotY -= 360;// TODO
 		}
-		if(this.rotY<-180){
+		if (this.rotY < -180) {
 			this.rotY += 360;
 		}
 		this.rotZ %= 360;
-		
+
 		float[] args = calculateCam(distance);
 		camera.set(cameraPosition.x + args[3], cameraPosition.y + args[4], cameraPosition.z + args[5], args[0], args[1], args[2]);
 	}
@@ -109,10 +107,9 @@ public class Entity {
 	}
 
 	private Vector3f getTop() {
-		float s = (float) (model.getRawModel().getToTop() * Math.cos(Math.toRadians(90 + rotX)));
+		float s = (float) (model.getToTop() * Math.cos(Math.toRadians(90 + rotX)));
 		return new Vector3f((float) (position.x - scale * s * Math.sin(Math.toRadians(rotY))),
-				(float) (position.y + scale * model.getRawModel().getToTop() * Math.sin(Math.toRadians(90 + rotX))),
-				(float) (position.z + scale * s * Math.cos(Math.toRadians(rotY))));
+				(float) (position.y + scale * model.getToTop() * Math.sin(Math.toRadians(90 + rotX))), (float) (position.z + scale * s * Math.cos(Math.toRadians(rotY))));
 	}
 
 	public float getTextureXOffset() {
@@ -127,11 +124,11 @@ public class Entity {
 		return (float) row / (float) number;
 	}
 
-	public TexturedModel getModel() {
+	public RawModel getModel() {
 		return model;
 	}
 
-	public void setModel(TexturedModel model) {
+	public void setModel(RawModel model) {
 		this.model = model;
 	}
 
@@ -191,7 +188,6 @@ public class Entity {
 	}
 
 	public Vector3f[] getCorners() {
-		RawModel model = this.model.getRawModel();
 		return Maths.calculateCorners(position, new Vector3f(model.getWidth(), model.getHeight(), model.getDepth()),
 				new Vector3f(model.getToRight(), model.getToTop(), model.getToEnd()), new Vector3f(rotX, rotY, rotZ));
 	}

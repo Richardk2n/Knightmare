@@ -13,21 +13,21 @@ import org.lwjgl.openal.ALDevice;
 import com.ares.knightmare.entities.Source;
 import com.ares.knightmare.util.WaveData;
 
-public class AudioMaster {
+public class AudioHandler {
 
-	private static ALContext context;
-	private static ALDevice device;
+	private ALContext context;
+	private ALDevice device;
 
-	private static List<Integer> buffers = new ArrayList<>();
-	private static List<Source> sources = new ArrayList<>();
+	private List<Integer> buffers = new ArrayList<>();
+	private List<Source> sources = new ArrayList<>();//TODO maybe add a reference
 
-	public static void init() {
+	public AudioHandler() {
 		context = ALContext.create();
 		device = context.getDevice();
 		AL10.alDistanceModel(AL11.AL_LINEAR_DISTANCE_CLAMPED);//TODO more realistic
 	}
 
-	public static int loadSound(String file) {
+	public int loadSound(String file) {
 		int buffer = AL10.alGenBuffers();
 		buffers.add(buffer);
 		WaveData waveFile = WaveData.create(file);
@@ -36,14 +36,14 @@ public class AudioMaster {
 		return buffer;
 	}
 
-	public static void setListenerData(float x, float y, float z, float rotX, float rotY, float rotZ) {
+	public void setListenerData(float x, float y, float z, float rotX, float rotY, float rotZ) {
 		AL10.alListener3f(AL10.AL_POSITION, x, y, z);
 		FloatBuffer listenerOri = (FloatBuffer) BufferUtils.createFloatBuffer(6).put(new float[] { rotY/-90, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f }).rewind();//TODO fix
 		AL10.alListenerfv(AL10.AL_ORIENTATION, listenerOri);
 		AL10.alListener3f(AL10.AL_VELOCITY, 0, 0, 0);//TODO maybe use some day
 	}
 
-	public static void cleanUp() {
+	public void cleanUp() {
 		for (Source source : sources) {
 			source.delete();
 		}
@@ -54,7 +54,7 @@ public class AudioMaster {
 		context.destroy();
 	}
 	
-	public static Source generateSource(float volume){
+	public Source generateSource(float volume){
 		Source source = new Source();
 		source.setVolume(volume);
 		source.setPosition(0, 0, 0);

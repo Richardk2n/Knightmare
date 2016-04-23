@@ -10,12 +10,9 @@ import com.ares.knightmare.entities.ParticleSystem;
 import com.ares.knightmare.entities.Source;
 import com.ares.knightmare.entities.Terrain;
 import com.ares.knightmare.entities.WaterTile;
-import com.ares.knightmare.handler.AudioMaster;
 import com.ares.knightmare.loader.Loader;
-import com.ares.knightmare.loader.NormalMappedObjLoader;
-import com.ares.knightmare.loader.OBJLoader;
+import com.ares.knightmare.loader.ObjLoader;
 import com.ares.knightmare.models.RawModel;
-import com.ares.knightmare.models.TexturedModel;
 import com.ares.knightmare.rendering.MasterRenderer;
 import com.ares.knightmare.textures.GuiTexture;
 import com.ares.knightmare.textures.ModelTexture;
@@ -34,13 +31,13 @@ public class Level {
 		this.renderer = renderer;
 		Entity entity = EntityFactory.createEntity(loader, "lamp", "lamp", "textures", false, new Vector3f(35, 0, -35), new Vector3f(0, 0, 0), 1, 1, 0);
 
-		RawModel modelg = OBJLoader.loadObjModel("fern", loader);
-		TexturedModel texturedModelg = new TexturedModel(modelg, new ModelTexture(loader.loadTexture("fern", "textures")));
-		ModelTexture textureg = texturedModelg.getTexture();
+		RawModel texturedModelg = ObjLoader.loadOBJ("fern", loader, false);
+		ModelTexture textureg = new ModelTexture(loader.loadTexture("fern", "textures"));
 		textureg.setNumberOfRows(2);
 		textureg.setShineDamper(0);
 		textureg.setReflectivity(0);
 		textureg.setHasTransparency(true);
+		texturedModelg.setTexture(textureg);
 		Entity gras = new Entity(texturedModelg, new Vector3f(25, 0, -25), 0, 0, 0, 1, 3);
 
 		q = EntityFactory.createEntity(loader, "tree", "tree", "textures", true, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 2, 0, 0);
@@ -86,7 +83,7 @@ public class Level {
 		// Light light2 = new Light(new Vector3f(150, 150, 100), new Vector3f(0,
 		// 1, 0));// TODO Light list and get 4 nearest for lighting
 		Light light3 = new Light(new Vector3f(35, 0, -35), new Vector3f(2, 0, 0), new Vector3f(0.01f, 0.01f, 0.001f));// TODO
-		Light light4 = new Light(new Vector3f(35, entity.getModel().getRawModel().getHeight() * 2 - 10, -35), new Vector3f(2, 0, 0), new Vector3f(0.01f, 0.01f, 0.001f));// TODO
+		Light light4 = new Light(new Vector3f(35, entity.getModel().getHeight() * 2 - 10, -35), new Vector3f(2, 0, 0), new Vector3f(0.01f, 0.01f, 0.001f));// TODO
 		// renderer.addLight(light);
 		// renderer.addLight(light1);
 //		 renderer.addLight(light2);
@@ -97,28 +94,36 @@ public class Level {
 		WaterTile water = new WaterTile(50, -50, 0);
 		renderer.addWater(water);
 		
-		TexturedModel barrelModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("barrel", loader), new ModelTexture(loader.loadTexture("barrel", "textures")));
+		RawModel barrelModel = ObjLoader.loadOBJ("barrel", loader, true);
+		barrelModel.setTexture(new ModelTexture(loader.loadTexture("barrel", "textures")));
 		barrelModel.getTexture().setNormalMap(loader.loadTexture("barrelNormal", "maps/normal"));
 		barrelModel.getTexture().setShineDamper(10);
 		barrelModel.getTexture().setReflectivity(0.5f);
 		
 		renderer.addNormalMappedEntity(new Entity(barrelModel, new Vector3f(0, 8, 40), 0, 0, 0, 0.25f));
 		
+		RawModel foot = ObjLoader.loadOBJ("foot", loader, true);
+		foot.setTexture(new ModelTexture(loader.loadTexture("foot", "textures")));
+		foot.getTexture().setNormalMap(loader.loadTexture("footNormal", "maps/normal"));
+		foot.getTexture().setShineDamper(10);
+		foot.getTexture().setReflectivity(0.5f);
+		
+		renderer.addNormalMappedEntity(new Entity(foot, new Vector3f(0, 8, -20), 0, 0, 0, 0.25f));
+		
 		FontType font = new FontType(loader.loadTexture("candara", "textures/font"), "/textures/font/candara.fnt");
 		GUIText text = new GUIText("Hello, you fool! Have a nice day.", 3, font, new Vector2f(0.125f, 0.125f), 0.75f, true);
 		text.setColour(1, 0, 0);
+		renderer.addText(text);
 		
 		ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("particleAtlas", "textures/particles"), 4);
-//		renderer.addParticle(new Particle(new Vector3f(q.getPosition()), new Vector3f(0, 0.5f, 0), 0.25f, 1000, 0, 1, particleTexture));
-		renderer.addParticleSystem(new ParticleSystem(10, 0.25f, 0.017f, 1000, particleTexture));
+		renderer.addParticleSystem(new ParticleSystem(10, 0.3f, 0.3f, 1000, particleTexture));
 		
 		
 		//TODO delete audio test code
-		AudioMaster.init();
-		AudioMaster.setListenerData(10, 10, 10, 0, 0, 0);
+		renderer.setListenerData(10, 10, 10, 0, 0, 0);//crate game registry
 
-		int buffer = AudioMaster.loadSound("sounds/music/Knightmare_Soundtrack_17.wav");
-		Source source = AudioMaster.generateSource(1);
+		int buffer = renderer.loadSound("sounds/music/Knightmare_Soundtrack_17.wav");
+		Source source = renderer.generateSource(1);
 		source.play(buffer);
 	}
 
