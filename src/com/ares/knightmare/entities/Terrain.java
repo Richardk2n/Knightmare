@@ -9,7 +9,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.ares.knightmare.loader.Loader;
-import com.ares.knightmare.models.RawModel;
+import com.ares.knightmare.models.Model;
 import com.ares.knightmare.textures.TerrainTexture;
 import com.ares.knightmare.textures.TerrainTexturePack;
 import com.ares.knightmare.util.HeightsGenerator;
@@ -17,10 +17,10 @@ import com.ares.knightmare.util.Maths;
 
 public class Terrain {
 
-	private static final float SIZE = 100, MAX_HEIGHT = 5, MIN_HEIGHT = -5, MAX_PIXEL_COLOR = 256 * 256 * 256;
+	private static final float SIZE = 100, MAX_HEIGHT = 5, MIN_HEIGHT = -5, MAX_PIXEL_COLOR = 256 * 256 * 256;//TODO SIZE chunksize
 
 	private float x, z, heights[][], height;
-	private RawModel model;
+	private Model model;
 	private TerrainTexturePack texturePack;
 	private TerrainTexture blendMap;
 	
@@ -45,7 +45,7 @@ public class Terrain {
 		model = generateTerrainUsingGenerator(loader);
 	}
 
-	private RawModel generateTerrain(Loader loader, String heightMap) {
+	private Model generateTerrain(Loader loader, String heightMap) {
 		BufferedImage image = null;
 		try {
 			image = ImageIO.read(Class.class.getResourceAsStream(new StringBuilder("/maps/height/").append(heightMap).append(".png").toString()));
@@ -118,7 +118,7 @@ public class Terrain {
 		return loader.loadToVAO(vertices, textureCoords, normals, indices);
 	}
 	
-	private RawModel generateTerrainUsingGenerator(Loader loader) {
+	private Model generateTerrainUsingGenerator(Loader loader) {
 		
 		HeightsGenerator generator = new HeightsGenerator((int)Math.floor(x/SIZE), (int)Math.floor(z/SIZE), 256, 123456789);
 		
@@ -233,6 +233,12 @@ public class Terrain {
 		int gridX = (int) Math.floor(terrainX / gridSquareSize);
 		int gridZ = (int) Math.floor(terrainZ / gridSquareSize);
 
+		if (gridX >= heights.length - 1) {
+			gridX--;
+		}
+		if (gridZ >= heights.length - 1) {
+			gridZ--;
+		}
 		if (gridX >= heights.length - 1 || gridZ >= heights.length - 1 || gridX < 0 || gridZ < 0) {
 			return 0;
 		}
@@ -264,7 +270,7 @@ public class Terrain {
 		return height;
 	}
 
-	public RawModel getModel() {
+	public Model getModel() {
 		return model;
 	}
 

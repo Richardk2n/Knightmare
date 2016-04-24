@@ -3,19 +3,19 @@ package com.ares.knightmare.entities;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.ares.knightmare.handler.TerrainHandler;
-import com.ares.knightmare.models.RawModel;
+import com.ares.knightmare.models.Model;
 import com.ares.knightmare.util.Maths;
 
 public class Entity {
 
-	private RawModel model;
+	private Model model;
 	private Vector3f position, cameraPosition;
 	private float rotX, rotY, rotZ, scale, distance = 10, xSpeed, ySpeed, zSpeed, BRAKE = -0.03f;// TODO use
-	public static final float GRAVITY = -0.001f; // TODO rework
+	public static final float GRAVITY = -0.03f; // TODO rework
 	private Camera camera;
 	private int textureIndex;
 
-	public Entity(RawModel model, Vector3f position, float rotY, float rotX, float rotZ, float scale) {
+	public Entity(Model model, Vector3f position, float rotY, float rotX, float rotZ, float scale) {
 		this.model = model;
 		this.position = position;
 		this.rotX = rotX;
@@ -24,7 +24,7 @@ public class Entity {
 		this.scale = scale;
 	}
 
-	public Entity(RawModel model, Vector3f position, float rotY, float rotX, float rotZ, float scale, int textureIndex) {
+	public Entity(Model model, Vector3f position, float rotY, float rotX, float rotZ, float scale, int textureIndex) {
 		this.model = model;
 		this.position = position;
 		this.rotX = rotX;
@@ -46,7 +46,7 @@ public class Entity {
 
 	public void tick(TerrainHandler terrainHandler) {
 		position.y += ySpeed;
-		ySpeed += GRAVITY*15;//TODO
+		ySpeed += GRAVITY;
 		float terrainHeight = terrainHandler.getHeightOfTerrain(position.x, position.z);
 		if (position.y < terrainHeight) {
 			ySpeed = 0;
@@ -124,11 +124,11 @@ public class Entity {
 		return (float) row / (float) number;
 	}
 
-	public RawModel getModel() {
+	public Model getModel() {
 		return model;
 	}
 
-	public void setModel(RawModel model) {
+	public void setModel(Model model) {
 		this.model = model;
 	}
 

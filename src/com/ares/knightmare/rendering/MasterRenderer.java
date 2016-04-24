@@ -17,7 +17,6 @@ import com.ares.knightmare.entities.Entity;
 import com.ares.knightmare.entities.Light;
 import com.ares.knightmare.entities.Particle;
 import com.ares.knightmare.entities.ParticleSystem;
-import com.ares.knightmare.entities.Source;
 import com.ares.knightmare.entities.Terrain;
 import com.ares.knightmare.entities.WaterTile;
 import com.ares.knightmare.handler.AudioHandler;
@@ -267,8 +266,12 @@ public class MasterRenderer {
 		return audioHandler.loadSound(path);
 	}
 
-	public Source generateSource(float volume) {// TODO set volume 1 maybe
+	public int generateSource(float volume) {// TODO set volume 1 maybe
 		return audioHandler.generateSource(volume);
+	}
+	
+	public AudioHandler getAudioHandler(){
+		return audioHandler;
 	}
 
 	public void addText(GUIText text) {
