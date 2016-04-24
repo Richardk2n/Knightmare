@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL33;
-import com.ares.knightmare.models.RawModel;
+import com.ares.knightmare.models.Model;
 import com.ares.knightmare.textures.Texture;
 import com.ares.knightmare.textures.TextureData;
 
@@ -31,14 +31,14 @@ public class Loader {
 	private List<Integer> vbos = new ArrayList<>();
 	private List<Integer> textures = new ArrayList<>();
 
-	public RawModel loadToVAO(float[] positions, float[] textureCoordinates, float[] normals, int[] indices) {
+	public Model loadToVAO(float[] positions, float[] textureCoordinates, float[] normals, int[] indices) {
 		int vaoID = createVAO();
 		bindIndicesBuffer(indices);
 		storeDataInAtrributeList(0, 3, positions);
 		storeDataInAtrributeList(1, 2, textureCoordinates);
 		storeDataInAtrributeList(2, 3, normals);
 		unbindVAO();
-		return new RawModel(vaoID, indices.length);
+		return new Model(vaoID, indices.length);
 	}
 
 	public int loadToVAO(float[] positions, float[] textureCoordinates) {
@@ -49,7 +49,7 @@ public class Loader {
 		return vaoID;
 	}
 
-	public RawModel loadToVAO(float[] positions, float[] textureCoordinates, float[] normals, int[] indices, float[] tangents) {
+	public Model loadToVAO(float[] positions, float[] textureCoordinates, float[] normals, int[] indices, float[] tangents) {
 		int vaoID = createVAO();
 		bindIndicesBuffer(indices);
 		storeDataInAtrributeList(0, 3, positions);
@@ -57,7 +57,7 @@ public class Loader {
 		storeDataInAtrributeList(2, 3, normals);
 		storeDataInAtrributeList(3, 3, tangents);
 		unbindVAO();
-		return new RawModel(vaoID, indices.length);
+		return new Model(vaoID, indices.length);
 	}
 
 	public int createEmptyVbo(int floatCount) {
@@ -88,11 +88,11 @@ public class Loader {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 
-	public RawModel loadToVAO(float[] positions, int diemensions) {
+	public Model loadToVAO(float[] positions, int diemensions) {
 		int vaoID = createVAO();
 		storeDataInAtrributeList(0, diemensions, positions);
 		unbindVAO();
-		return new RawModel(vaoID, positions.length / diemensions);
+		return new Model(vaoID, positions.length / diemensions);
 	}
 
 	public int loadTexture(String fileName, String type) {

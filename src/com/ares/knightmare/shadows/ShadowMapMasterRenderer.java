@@ -11,7 +11,7 @@ import org.lwjgl.util.vector.Vector3f;
 import com.ares.knightmare.entities.Camera;
 import com.ares.knightmare.entities.Entity;
 import com.ares.knightmare.entities.Light;
-import com.ares.knightmare.models.RawModel;
+import com.ares.knightmare.models.Model;
 import com.ares.knightmare.shaders.ShadowShader;
 import com.ares.knightmare.util.FrameBufferObject;
 
@@ -71,7 +71,7 @@ public class ShadowMapMasterRenderer {
 	 * @param sun
 	 *            - the light acting as the sun in the scene.
 	 */
-	public void render(Map<RawModel, List<Entity>> entities, Light sun, Camera cam) {
+	public void render(Map<Model, List<Entity>> entities, Light sun, Camera cam) {
 		shadowBox.update(cam);//TODO to game cycle
 		Vector3f sunPosition = sun.getPosition();
 		Vector3f lightDirection = new Vector3f(-sunPosition.x, -sunPosition.y, -sunPosition.z);
@@ -81,7 +81,7 @@ public class ShadowMapMasterRenderer {
 	}
 	
 
-	public void render(Map<RawModel, List<Entity>> entities, Map<RawModel, List<Entity>> entitiesN, Light sun, Camera cam) {
+	public void render(Map<Model, List<Entity>> entities, Map<Model, List<Entity>> entitiesN, Light sun, Camera cam) {
 		shadowBox.update(cam);//TODO to game cycle
 		Vector3f sunPosition = sun.getPosition();
 		Vector3f lightDirection = new Vector3f(-sunPosition.x, -sunPosition.y, -sunPosition.z);

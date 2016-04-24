@@ -10,7 +10,6 @@ import org.lwjgl.openal.AL11;
 import org.lwjgl.openal.ALContext;
 import org.lwjgl.openal.ALDevice;
 
-import com.ares.knightmare.entities.Source;
 import com.ares.knightmare.util.WaveData;
 
 public class AudioHandler {
@@ -19,7 +18,7 @@ public class AudioHandler {
 	private ALDevice device;
 
 	private List<Integer> buffers = new ArrayList<>();
-	private List<Source> sources = new ArrayList<>();//TODO maybe add a reference
+	private List<Integer> sources = new ArrayList<>();//TODO maybe add a reference
 
 	public AudioHandler() {
 		context = ALContext.create();
@@ -44,8 +43,8 @@ public class AudioHandler {
 	}
 
 	public void cleanUp() {
-		for (Source source : sources) {
-			source.delete();
+		for (int source : sources) {
+			delete(source);
 		}
 		for (int buffer : buffers) {
 			AL10.alDeleteBuffers(buffer);
@@ -54,11 +53,66 @@ public class AudioHandler {
 		context.destroy();
 	}
 	
-	public Source generateSource(float volume){
-		Source source = new Source();
-		source.setVolume(volume);
-		source.setPosition(0, 0, 0);
-		sources.add(source);
-		return source;
+	public int generateSource(float volume){
+		int sourceId = AL10.alGenSources();
+		
+		AL10.alSourcef(sourceId, AL10.AL_ROLLOFF_FACTOR, 1);//TODO move
+		AL10.alSourcef(sourceId, AL10.AL_REFERENCE_DISTANCE, 50);
+		AL10.alSourcef(sourceId, AL10.AL_MAX_DISTANCE, 100);
+		setVolume(sourceId, volume);
+		setPosition(sourceId, 0, 0, 0);//TODO use
+		sources.add(sourceId);
+		return sourceId;
+	}
+
+	public void play(int sourceId, int buffer) {
+		stop(sourceId);//TODO change to fade
+		AL10.alSourcei(sourceId, AL10.AL_BUFFER, buffer);
+		AL10.alSourcePlay(sourceId);
+	}
+	
+	public void pause(int sourceId){
+		AL10.alSourcePause(sourceId);
+	}
+	
+	public void continuePlaying(int sourceId){
+		AL10.alSourcePlay(sourceId);
+	}
+	
+	public void stop(int sourceId){
+		AL10.alSourceStop(sourceId);
+	}
+	
+	public void fade(int sourceId){
+		//TODO
+	}
+
+	public void setVolume(int sourceId, float volume) {
+		AL10.alSourcef(sourceId, AL10.AL_GAIN, volume);
+	}
+
+	public void setPitch(int sourceId, float pitch) {
+		AL10.alSourcef(sourceId, AL10.AL_PITCH, pitch);
+	}
+
+	public void setPosition(int sourceId, float x, float y, float z) {
+		AL10.alSource3f(sourceId, AL10.AL_POSITION, x, y, z);
+	}
+
+	public void setVelocity(int sourceId, float x, float y, float z) {
+		AL10.alSource3f(sourceId, AL10.AL_VELOCITY, x, y, z);
+	}
+
+	public void setLooping(int sourceId, boolean loop) {
+		AL10.alSourcei(sourceId, AL10.AL_LOOPING, loop ? AL10.AL_TRUE : AL10.AL_FALSE);
+	}
+	
+	public boolean isPlaying(int sourceId){
+		return AL10.alGetSourcei(sourceId, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
+	}
+
+	public void delete(int sourceId) {
+		stop(sourceId);
+		AL10.alDeleteSources(sourceId);
 	}
 }

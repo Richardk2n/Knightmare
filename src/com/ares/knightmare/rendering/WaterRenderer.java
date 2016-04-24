@@ -11,7 +11,7 @@ import com.ares.knightmare.entities.Camera;
 import com.ares.knightmare.entities.WaterTile;
 import com.ares.knightmare.handler.LightHandler;
 import com.ares.knightmare.loader.Loader;
-import com.ares.knightmare.models.RawModel;
+import com.ares.knightmare.models.Model;
 import com.ares.knightmare.shaders.WaterShader;
 import com.ares.knightmare.util.FrameBufferObject;
 import com.ares.knightmare.util.Maths;
@@ -21,7 +21,7 @@ public class WaterRenderer {
 	private static final String DUDV_MAP = "waterDUDV";
 	private static final String NORMAL_MAP = "matchingNormalMap";// TODO
 
-	private final RawModel quad;
+	private final Model quad;
 	private WaterShader shader = new WaterShader();
 	private FrameBufferObject reflectionFrameBuffer, refractionFrameBuffer;
 

@@ -8,7 +8,7 @@ import org.lwjgl.util.vector.Matrix4f;
 
 import com.ares.knightmare.entities.Camera;
 import com.ares.knightmare.loader.Loader;
-import com.ares.knightmare.models.RawModel;
+import com.ares.knightmare.models.Model;
 import com.ares.knightmare.shaders.SkyboxShader;
 
 public class SkyboxRenderer {
@@ -28,7 +28,7 @@ public class SkyboxRenderer {
 			-SIZE, -SIZE, -SIZE, -SIZE, -SIZE, SIZE, SIZE, -SIZE, -SIZE, SIZE, -SIZE, -SIZE, -SIZE, -SIZE, SIZE, SIZE, -SIZE, SIZE };
 	private static String[] TEXTURE_FILES = { "right", "left", "top", "bottom", "back", "front" },
 			NIGHT_TEXTURE_FILES = { "nightRight", "nightLeft", "nightTop", "nightBottom", "nightBack", "nightFront" };
-	private RawModel cube;
+	private Model cube;
 	private int texture, nightTexture;
 	private SkyboxShader shader = new SkyboxShader();
 

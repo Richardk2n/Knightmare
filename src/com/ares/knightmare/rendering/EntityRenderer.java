@@ -13,7 +13,7 @@ import org.lwjgl.util.vector.Vector4f;
 import com.ares.knightmare.entities.Camera;
 import com.ares.knightmare.entities.Entity;
 import com.ares.knightmare.handler.LightHandler;
-import com.ares.knightmare.models.RawModel;
+import com.ares.knightmare.models.Model;
 import com.ares.knightmare.shaders.EntityShader;
 import com.ares.knightmare.textures.ModelTexture;
 import com.ares.knightmare.util.Maths;
@@ -30,12 +30,12 @@ public class EntityRenderer {
 		this.handler = handler;
 	}
 
-	public void render(Map<RawModel, List<Entity>> entities, Vector4f plane, float skyR, float skyG, float skyB, Camera camera) {
+	public void render(Map<Model, List<Entity>> entities, Vector4f plane, float skyR, float skyG, float skyB, Camera camera) {
 		shader.start();
 		shader.loadClipPlane(plane);
 		shader.loadSkyColor(skyR, skyG, skyB);
 		shader.loadViewMatrix(camera);
-		for (RawModel model : entities.keySet()) {
+		for (Model model : entities.keySet()) {
 			prepareTexturedModel(model);
 			List<Entity> batch = entities.get(model);
 			for (Entity entity : batch) {
@@ -47,7 +47,7 @@ public class EntityRenderer {
 		shader.stop();
 	}
 
-	private void prepareTexturedModel(RawModel texturedModel) {
+	private void prepareTexturedModel(Model texturedModel) {
 		GL30.glBindVertexArray(texturedModel.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);

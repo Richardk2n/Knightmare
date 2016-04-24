@@ -16,7 +16,7 @@ import org.lwjgl.util.vector.Vector3f;
 import com.ares.knightmare.entities.Camera;
 import com.ares.knightmare.entities.Particle;
 import com.ares.knightmare.loader.Loader;
-import com.ares.knightmare.models.RawModel;
+import com.ares.knightmare.models.Model;
 import com.ares.knightmare.shaders.ParticleShader;
 import com.ares.knightmare.textures.ParticleTexture;
 import com.ares.knightmare.util.Maths;
@@ -29,7 +29,7 @@ public class ParticleRenderer {
 	
 	private static final FloatBuffer buffer = BufferUtils.createFloatBuffer(MAX_INSTANCES * INSTANCE_DATA_LENGTH);
 	
-	private RawModel quad;
+	private Model quad;
 	private ParticleShader shader;
 	
 	private Loader loader;

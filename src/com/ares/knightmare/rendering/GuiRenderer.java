@@ -9,14 +9,14 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
 import com.ares.knightmare.loader.Loader;
-import com.ares.knightmare.models.RawModel;
+import com.ares.knightmare.models.Model;
 import com.ares.knightmare.shaders.GuiShader;
 import com.ares.knightmare.textures.GuiTexture;
 import com.ares.knightmare.util.Maths;
 
 public class GuiRenderer {
 	
-	private final RawModel quad;
+	private final Model quad;
 	private GuiShader shader = new GuiShader();
 
 	public GuiRenderer(Loader loader){

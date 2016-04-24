@@ -5,12 +5,12 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import com.ares.knightmare.loader.Loader;
-import com.ares.knightmare.models.RawModel;
+import com.ares.knightmare.models.Model;
 
 public class PostProcessing {
 	
 	private static final float[] POSITIONS = { -1, 1, -1, -1, 1, 1, 1, -1 };	
-	private static RawModel quad;
+	private static Model quad;
 	private static ContrastChanger contrastChanger;
 
 	public static void init(Loader loader){

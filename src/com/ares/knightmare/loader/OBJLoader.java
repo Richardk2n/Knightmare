@@ -9,14 +9,14 @@ import java.util.List;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.ares.knightmare.models.RawModel;
+import com.ares.knightmare.models.Model;
 import com.ares.knightmare.util.Vertex;
 
 public class ObjLoader {
 
 	private static final String RES_LOC = "/models/";
 
-	public static RawModel loadOBJ(String objFileName, Loader loader, boolean isNormalMapped) {
+	public static Model loadOBJ(String objFileName, Loader loader, boolean isNormalMapped) {
 		InputStreamReader isr = new InputStreamReader(Class.class.getResourceAsStream(new StringBuilder(RES_LOC).append(objFileName).append(".obj").toString()));
 		BufferedReader reader = new BufferedReader(isr);
 		String line;
@@ -86,7 +86,7 @@ public class ObjLoader {
 		}
 		int[] indicesArray = convertIndicesListToArray(indices);
 
-		RawModel rawModel;
+		Model rawModel;
 		if(isNormalMapped){
 			rawModel = loader.loadToVAO(verticesArray, texturesArray, normalsArray, indicesArray, tangentsArray);
 		}else{

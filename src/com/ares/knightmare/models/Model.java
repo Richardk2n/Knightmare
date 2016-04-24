@@ -2,13 +2,13 @@ package com.ares.knightmare.models;
 
 import com.ares.knightmare.textures.ModelTexture;
 
-public class RawModel {
+public class Model {
 
 	private int vaoID, vertexCount;
 	private float height, width, depth, toTop, toRight, toEnd;
 	private ModelTexture texture;
 	
-	public RawModel(int vaoID, int vertexCount){
+	public Model(int vaoID, int vertexCount){
 		this.vaoID = vaoID;
 		this.vertexCount = vertexCount;
 	}

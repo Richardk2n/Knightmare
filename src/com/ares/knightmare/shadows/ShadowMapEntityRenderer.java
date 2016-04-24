@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
 import com.ares.knightmare.entities.Entity;
-import com.ares.knightmare.models.RawModel;
+import com.ares.knightmare.models.Model;
 import com.ares.knightmare.rendering.MasterRenderer;
 import com.ares.knightmare.shaders.ShadowShader;
 import com.ares.knightmare.util.Maths;
@@ -40,8 +40,8 @@ public class ShadowMapEntityRenderer {
 	 * @param entities
 	 *            - the entities to be rendered to the shadow map.
 	 */
-	protected void render(Map<RawModel, List<Entity>> entities) {
-		for (RawModel model : entities.keySet()) {
+	protected void render(Map<Model, List<Entity>> entities) {
+		for (Model model : entities.keySet()) {
 			bindModel(model);
 			GL13.glActiveTexture(GL13.GL_TEXTURE0);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getId());
@@ -70,7 +70,7 @@ public class ShadowMapEntityRenderer {
 	 * @param model
 	 *            - the model to be bound.
 	 */
-	private void bindModel(RawModel model) {
+	private void bindModel(Model model) {
 		GL30.glBindVertexArray(model.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);

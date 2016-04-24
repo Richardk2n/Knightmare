@@ -13,7 +13,7 @@ import org.lwjgl.util.vector.Vector4f;
 import com.ares.knightmare.entities.Camera;
 import com.ares.knightmare.entities.Terrain;
 import com.ares.knightmare.handler.LightHandler;
-import com.ares.knightmare.models.RawModel;
+import com.ares.knightmare.models.Model;
 import com.ares.knightmare.shaders.TerrainShader;
 import com.ares.knightmare.textures.TerrainTexturePack;
 import com.ares.knightmare.util.Maths;
@@ -49,7 +49,7 @@ public class TerrainRenderer {
 	}
 
 	private void prepareTerrain(Terrain terrain) {
-		RawModel model = terrain.getModel();
+		Model model = terrain.getModel();
 		GL30.glBindVertexArray(model.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);

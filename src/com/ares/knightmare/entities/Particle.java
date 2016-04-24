@@ -9,7 +9,7 @@ public class Particle {
 
 	private Vector3f position;
 	private Vector3f velocity;
-	private float lifeLength, rotation, scale, elapsedTime = 0, distance, cw;//TODO use
+	private float lifeLength, rotation, scale, elapsedTime = 0, distance, gravityConstant;//TODO use
 
 	private ParticleTexture texture;
 
@@ -17,10 +17,10 @@ public class Particle {
 	private Vector2f texOffset2 = new Vector2f();
 	private float blend;
 
-	public Particle(Vector3f position, Vector3f velocity, float cw, float lifeLength, float rotation, float scale, ParticleTexture texture) {
+	public Particle(Vector3f position, Vector3f velocity, float gravityConstant, float lifeLength, float rotation, float scale, ParticleTexture texture) {
 		this.position = position;
 		this.velocity = velocity;
-		this.cw = cw;
+		this.gravityConstant = gravityConstant;
 		this.lifeLength = lifeLength;
 		this.rotation = rotation;
 		this.scale = scale;
@@ -44,10 +44,7 @@ public class Particle {
 	}
 
 	public boolean update(Camera camera) {
-		velocity.y += Entity.GRAVITY;//TODO
-		if(velocity.y<0){
-			velocity.y += cw*velocity.y*velocity.y;
-		}
+		velocity.y += Entity.GRAVITY*gravityConstant;//TODO
 		Vector3f.add(position, velocity, position);
 		distance = Vector3f.sub(camera.getPosition(), position, null).lengthSquared();
 		updateTextureCoordInfo();
