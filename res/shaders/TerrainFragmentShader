@@ -23,15 +23,15 @@ uniform float reflectivity;
 uniform vec3 skyColor;
 
 const float tiling = 100.0;
-uniform int pfcCount = 1;
+uniform int pfcCount;
 
 void main(void){
 
 	float totalTexels = (pfcCount * 2.0 + 1.0) * (pfcCount * 2.0 + 1.0);
-	float mapSize = 16384.0; //UNIFORM!
+	float mapSize = 16384; //UNIFORM!
 	float texelSize = 1.0/mapSize;
 	float total = 0.0;
-	
+
 	for(int x = -pfcCount; x<=pfcCount; x++){
 		for(int y = -pfcCount; y<=pfcCount; y++){
 			float objectNearestLight = texture(shadowMap, shadowCoords.xy + vec2(x, y) * texelSize).r;

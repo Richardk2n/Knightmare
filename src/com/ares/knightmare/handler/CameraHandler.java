@@ -35,6 +35,10 @@ public class CameraHandler {
 		}
 	}
 	
+	public void applyAcceleration(float ad, float ss, float ws){
+		entity.applyAcceleration(ad, ss, ws);
+	}
+	
 	public void zoom(double amount){
 		if(entity==null){
 			overseher.move(0, -Float.parseFloat(String.valueOf(amount)), 0);

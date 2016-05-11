@@ -13,7 +13,6 @@ import com.ares.knightmare.loader.Loader;
 import com.ares.knightmare.rendering.MasterRenderer;
 import com.ares.knightmare.textures.GuiTexture;
 import com.ares.knightmare.textures.ParticleTexture;
-import com.ares.knightmare.textures.TerrainTexture;
 import com.ares.knightmare.textures.TerrainTexturePack;
 import com.ares.knightmare.util.fontMeshCreator.FontType;
 import com.ares.knightmare.util.fontMeshCreator.GUIText;
@@ -37,13 +36,13 @@ public class Level {
 		Entity fern2 = EntityFactory.createEntity("fern", new Vector3f(-10, 15, 10), 1, 3);
 
 		// TODO
-		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("gras", "textures"));
-		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("white", "textures"));
-		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("Mauer", "textures"));
-		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("sand", "textures"));
+		int backgroundTexture = loader.loadTexture("gras", "textures");
+		int rTexture = loader.loadTexture("white", "textures");
+		int gTexture = loader.loadTexture("Mauer", "textures");
+		int bTexture = loader.loadTexture("sand", "textures");
 
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, bTexture, gTexture);
-		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap", "maps/blend"));
+		int blendMap = loader.loadTexture("blendMap", "maps/blend");
 		Terrain terrain = new Terrain(0, -1, 0, loader, texturePack, blendMap, "heightmapA");
 //		Terrain terrain = new Terrain(0, -1, 0, loader, texturePack, blendMap);
 		Terrain terrain2 = new Terrain(0, -2, 10, loader, texturePack, blendMap, "heightmapB");

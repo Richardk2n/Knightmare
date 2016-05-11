@@ -14,7 +14,7 @@ public class KeyListener extends GLFWKeyCallback {
 	private CameraHandler cameraHandler;
 	private Level level;
 	private Timer timerW, timerS, timerA, timerD, timerSp, timerSh;
-	private static final float speed = 0.05f;
+	private static final float speed = 0.1f;
 	private static final int period = 5;
 
 	public KeyListener(CameraHandler cameraHandler, Level level) {

@@ -9,8 +9,8 @@ import com.ares.knightmare.util.Maths;
 public class Entity {
 
 	private Model model;
-	private Vector3f position, cameraPosition;
-	private float rotX, rotY, rotZ, scale, distance = 10, xSpeed, ySpeed, zSpeed, BRAKE = -0.03f;// TODO use
+	private Vector3f position, cameraPosition, velocity = new Vector3f(), brake = new Vector3f(0.03f, 0.03f, 0.03f);
+	private float rotX, rotY, rotZ, scale, distance = 10, BRAKE = -0.03f, maxSpeed = 1;// TODO use
 	public static final float GRAVITY = -0.03f; // TODO rework
 	private Camera camera;
 	private int textureIndex;
@@ -33,6 +33,10 @@ public class Entity {
 		this.scale = scale;
 		this.textureIndex = textureIndex;
 	}
+	
+	public void accelerate(Vector3f acceleration){
+		Vector3f.add(velocity, acceleration, velocity);
+	}
 
 	public void setCamera(Camera camera) {
 		this.camera = camera;
@@ -45,11 +49,13 @@ public class Entity {
 	}
 
 	public void tick(TerrainHandler terrainHandler) {
-		position.y += ySpeed;
-		ySpeed += GRAVITY;
+//		calculateVelocity();
+//		Vector3f.add(position, velocity, position);
+		position.y += velocity.y;
+		velocity.y += GRAVITY;//TODO
 		float terrainHeight = terrainHandler.getHeightOfTerrain(position.x, position.z);
 		if (position.y < terrainHeight) {
-			ySpeed = 0;
+			velocity.y = 0;
 			position.y = terrainHeight;
 		}
 		if (camera != null) {
@@ -57,16 +63,61 @@ public class Entity {
 			camera.set(cameraPosition.x + args[3], cameraPosition.y + args[4], cameraPosition.z + args[5], args[0], args[1], args[2]);
 		}
 	}
+	
+	private void calculateVelocity(){
+		if(velocity.x<0){
+			velocity.x += brake.x;
+			if(velocity.x > 0){
+				velocity.x = 0;
+			}
+		} else if(velocity.x>0){
+			velocity.x -= brake.x;
+			if(velocity.x < 0){
+				velocity.x = 0;
+			}
+		}
+		velocity.y -= brake.y;//TODO max speed
+		if(velocity.z<0){
+			velocity.z += brake.z;
+			if(velocity.z > 0){
+				velocity.z = 0;
+			}
+		} else if(velocity.z>0){
+			velocity.z -= brake.z;
+			if(velocity.z < 0){
+				velocity.z = 0;
+			}
+		}
+		float speed = velocity.length();
+		if(speed>maxSpeed){
+			velocity.scale(maxSpeed/speed);
+		}
+	}
 
 	public void move(float ad, float ss, float ws) {
 		position.x += ad * Math.cos(Math.toRadians(rotY)) - ws * Math.sin(Math.toRadians(rotY));
-		if (ySpeed == 0) {
-			ySpeed = ss * 7;
+		if (velocity.y == 0) {
+			velocity.y = ss * 7;//TODO sense
 		}
 		position.z += ws * Math.cos(Math.toRadians(rotY)) + ad * Math.sin(Math.toRadians(rotY));
 
 		float[] args = calculateCam(distance);
 		camera.set(cameraPosition.x + args[3], cameraPosition.y + args[4], cameraPosition.z + args[5], args[0], args[1], args[2]);
+	}
+	
+	public void applyAcceleration(float dx, float dy, float dz){
+		float sxz = (float) (Math.cos(Math.toRadians(rotX)));
+		float x = -(float) (sxz * Math.sin(Math.toRadians(rotY)));
+		float y = (float) (Math.sin(Math.toRadians(rotX)));
+		float z = (float) (sxz * Math.cos(Math.toRadians(rotY)));
+		Vector3f look = new Vector3f(-x, -y, -z);
+		look.normalise();
+		Vector3f top = Vector3f.sub(getTop(), position, null);
+		top.normalise();
+		Vector3f right = Vector3f.cross(look, top, null);
+		right.normalise();
+		Vector3f acc = Vector3f.add((Vector3f) look.scale(dz), Vector3f.add((Vector3f) top.scale(dy), (Vector3f) right.scale(dx), null), null);
+		accelerate(acc);
 	}
 
 	public void rotate(float rotX, float rotY, float rotZ) {

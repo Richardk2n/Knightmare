@@ -40,7 +40,7 @@ public class MasterRenderer {
 	public static final float FOV = 70, NEAR_PLANE = 0.1f, FAR_PLANE = 1000;
 	public static final float SKY_R = 0.4f, SKY_G = 0.5f, SKY_B = 0.5f;
 	private static final float SHADOW_DISTANCE = 150, TRANSITION_DISTANCE_SHADOW = 10;
-	private static final int SHADOW_PFC_COUNT = 1; //TODO settings
+	private static final int SHADOW_PFC_COUNT = 10; //TODO settings
 
 	private EntityRenderer entityRenderer;
 	private TerrainRenderer terrainRenderer;

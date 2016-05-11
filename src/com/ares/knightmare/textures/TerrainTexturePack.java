@@ -2,28 +2,28 @@ package com.ares.knightmare.textures;
 
 public class TerrainTexturePack {
 
-	private TerrainTexture backgroundTexture, rTexture, bTexture, gTexture;
+	private int backgroundTexture, rTexture, bTexture, gTexture;//TODO maybe delete this class as well
 
-	public TerrainTexturePack(TerrainTexture backgroundTexture, TerrainTexture rTexture, TerrainTexture bTexture, TerrainTexture gTexture) {
+	public TerrainTexturePack(int backgroundTexture, int rTexture, int bTexture, int gTexture) {
 		this.backgroundTexture = backgroundTexture;
 		this.rTexture = rTexture;
 		this.bTexture = bTexture;
 		this.gTexture = gTexture;
 	}
 
-	public TerrainTexture getBackgroundTexture() {
+	public int getBackgroundTexture() {
 		return backgroundTexture;
 	}
 
-	public TerrainTexture getrTexture() {
+	public int getrTexture() {
 		return rTexture;
 	}
 
-	public TerrainTexture getbTexture() {
+	public int getbTexture() {
 		return bTexture;
 	}
 
-	public TerrainTexture getgTexture() {
+	public int getgTexture() {
 		return gTexture;
 	}
 

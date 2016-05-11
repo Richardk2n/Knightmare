@@ -10,7 +10,6 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.ares.knightmare.loader.Loader;
 import com.ares.knightmare.models.Model;
-import com.ares.knightmare.textures.TerrainTexture;
 import com.ares.knightmare.textures.TerrainTexturePack;
 import com.ares.knightmare.util.HeightsGenerator;
 import com.ares.knightmare.util.Maths;
@@ -22,12 +21,12 @@ public class Terrain {
 	private float x, z, heights[][], height;
 	private Model model;
 	private TerrainTexturePack texturePack;
-	private TerrainTexture blendMap;
+	private int blendMap;
 	
 	private float[] vertices, normals, textureCoords;
 	private int[] indices;
 
-	public Terrain(int gridX, int gridZ, float height, Loader loader, TerrainTexturePack texturePack, TerrainTexture blendMap, String heightMap) {
+	public Terrain(int gridX, int gridZ, float height, Loader loader, TerrainTexturePack texturePack, int blendMap, String heightMap) {
 		this.texturePack = texturePack;
 		this.blendMap = blendMap;
 		x = gridX * SIZE;
@@ -36,7 +35,7 @@ public class Terrain {
 		model = generateTerrain(loader, heightMap);
 	}
 	
-	public Terrain(int gridX, int gridZ, float height, Loader loader, TerrainTexturePack texturePack, TerrainTexture blendMap) {
+	public Terrain(int gridX, int gridZ, float height, Loader loader, TerrainTexturePack texturePack, int blendMap) {
 		this.texturePack = texturePack;
 		this.blendMap = blendMap;
 		x = gridX * SIZE;
@@ -278,7 +277,7 @@ public class Terrain {
 		return texturePack;
 	}
 
-	public TerrainTexture getBlendMap() {
+	public int getBlendMap() {
 		return blendMap;
 	}
 
